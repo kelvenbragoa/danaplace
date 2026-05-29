@@ -1,0 +1,472 @@
+<script setup>
+import axios from "axios";
+import {
+    ref,
+    onMounted,
+    reactive,
+    defineEmits,
+    defineComponent,
+    watch,
+} from "vue";
+import moment from "moment";
+import { useToastr } from "../../../toastr";
+import { debounce } from "lodash";
+import { Form, Field } from "vee-validate";
+import { useRouter } from "vue-router";
+import * as yup from "yup";
+import VueFeather from "vue-feather";
+import { Bootstrap4Pagination } from "laravel-vue-pagination";
+import VueHtmlToPaper from "vue-html-to-paper";
+import { usePaperizer } from "paperizer";
+
+let retrievedData = ref([]);
+let loadingSubmit = ref([true]);
+let loadingDiv = ref([true]);
+const loadingprint = ref(false);
+const router = useRouter();
+let self = this;
+const image = ref();
+const destination = ref();
+const uploads = ref();
+let openedbyuser = ref();
+let closedbyuser = ref();
+let jobtasks = ref();
+
+let destinationuser = ref();
+let requeststock = ref([]);
+let requesttool = ref([]);
+let requesttechnician = ref([]);
+let resolutions = ref();
+let preresolutions = ref();
+let equipmentref = ref(0);
+let jobcardnr = ref(0);
+const toastr = useToastr();
+
+function formatCurrency(value) {
+  if (isNaN(value) || value === null || value === undefined) {
+    return '0,00';
+  }
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value));
+}
+
+let { paperize } = usePaperizer("print-me", {
+    styles: [
+        "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css",
+    ],
+    windowTitle: `REF: ${equipmentref.value} - ENERGY INVOICE Nº: #${router.currentRoute.value.params.id}`,
+});
+
+const downloadMcscr = () => {
+    loadingprint.value = true;
+    paperize();
+    loadingprint.value = false;
+};
+
+const getData = () => {
+    axios
+        .get(`/energyinvoice/+${router.currentRoute.value.params.id}`)
+        .then((response) => {
+            loadingDiv.value = false;
+            retrievedData.value = response.data.energyinvoice;
+            equipmentref.value = response.data.energyinvoice.id;
+            jobcardnr.value = response.data.energyinvoice.id;
+
+            if (destination.value.image != null) {
+                image.value = "/storage/" + destination.value.image;
+            } else {
+                image.value = "/files/img/sys/companylogo.png";
+            }
+        })
+        .catch(() => {
+            loadingDiv.value = false;
+        });
+};
+
+onMounted(() => {
+    getData();
+});
+</script>
+
+<template>
+    <div v-if="!loadingDiv">
+        <h1 class="h3 mb-3">Fatura Energia</h1>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body m-sm-3 m-md-5 border">
+                        <div class="mb-4">
+                            <a @click="$router.go(-1)" class="btn btn-pill btn-primary mt-3"><vue-feather type="arrow-left"></vue-feather>Voltar</a> 
+                            
+                        </div>
+                        <div id="print-me">
+                            <div class="row text-center">
+                                <div
+                                    class="col text-center"
+                                    style="text-align: center"
+                                >
+                                    <h2>Areia Branca Condominium Energy Bill</h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <!-- <div class="col">
+                                                <div class="col-2">
+                                                    <img src="/files/img/sys/companylogo.png" class="img-fluid" alt="M+D" width="450" height="450">
+                                                </div>
+                                            </div> -->
+                                <br />
+                                <div
+                                    class="col text-left"
+                                    style="text-align: left"
+                                >
+                                    <img
+                                        src="/files/img/sys/companylogo.png"
+                                        class="img-fluid"
+                                        alt="image"
+                                        width="150px"
+                                        height="150px"
+                                        style="text-align: left"
+                                    />
+                                </div>
+                                <div class="col">
+                                    <br />
+                                </div>
+                                <div
+                                    class="col text-right"
+                                    style="text-align: right"
+                                >
+                                    <!-- <img
+                                        src="/files/img/sys/volvopenta1.png"
+                                        class="img-fluid mt-2"
+                                        alt="image"
+                                        width="250px"
+                                        height="250px"
+                                        style="text-align: right"
+                                    /> -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <!-- <div class="text-muted">Área de Manutenção</div> -->
+                                    <!-- <strong> {{ retrievedData.area.name ?? 'N/A' }} </strong> -->
+                                    <p style="font-size:10px">
+                                        Condominio Areia Branca Lda
+                                        <br />
+                                        Cimento a Ponta de Ouro
+                                        <br />
+                                        Matutuine, Moçambique
+                                        <br />
+                                        Tel: +258 87 914 1774
+                                        <br />
+                                        Email: info@ieareiabranca.com
+                                        <br />
+                                        www.areiabranca.com
+                                    </p>
+                                </div>
+                                <div class="col">
+                                    <br />
+                                </div>
+                            </div>
+                            
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 10px;">
+                                            DATE:
+                                            {{
+                                                moment(
+                                                    retrievedData.created_at
+                                                ).format("DD-MM-YYYY H:mm")
+                                            }}
+                                        </th>
+                                        <th style="font-size: 10px;">
+                                            FROM:
+                                            {{
+                                                moment(
+                                                    retrievedData.start_date_period
+                                                ).format("DD-MM-YYYY H:mm")
+                                            }}
+                                        </th>
+                                        <th style="font-size: 10px;">
+                                            TO:
+                                            {{
+                                                moment(
+                                                    retrievedData.end_date_period
+                                                ).format("DD-MM-YYYY H:mm")
+                                            }}
+                                        </th>
+                                        <th style="font-size: 10px;">
+                                            INVOICE Nº: #{{ retrievedData.id }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                
+                            </table>
+                            <div class="row">
+                                <div class="col-6">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    colspan="3"
+                                                    class="bg-secondary"
+                                                    style="font-size: 10px;"
+                                                >
+                                                     INFORMATION FROM THE GENERAL EDM INVOICE
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="font-size: 10px;">Consumo de Energia Ativa</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.active_energy_consumption) }}
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.active_energy_consumption_cost) }} MT
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Consumo de Energia Reativa</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.reactive_energy_consumption) }}
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.reactive_energy_consumption_cost) }} MT
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Perda</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.loss) }}
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.loss_cost) }} MT
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Ponta</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.ponta) }}
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.ponta_cost) }} MT
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Taxa Fixa</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.fix_rate) }}
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.fix_rate_cost) }} MT
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Taxa Iva</td>
+                                                <td style="font-size: 10px;">
+                                                    1
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.tax_iva) }} MT
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Total</td>
+                                                <td style="font-size: 10px;">
+                                                    
+                                                </td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.invoice_total_cost) }} MT
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                 <div class="col-6">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    colspan="3"
+                                                    class="bg-secondary"
+                                                    style="font-size: 10px;"
+                                                >
+                                                     INFORMATION OF THE COEFFICIENTS AND RATES OF THE CALCULATIONS
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="font-size: 10px;">Apartamentos</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ retrievedData.quantity_houses }}
+                                                </td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Ponta + Fix Rate</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.ponta_plus_fix_rate) }}
+                                                </td>
+                                               
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Fix Rate + Fix Rate per House *</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.fix_rate_plus_fix_rate_per_house) }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Rate per Active Consumption **</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.rate_per_active_consumption) }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 10px;">Difference ***</td>
+                                                <td style="font-size: 10px;">
+                                                    {{ formatCurrency(retrievedData.difference) }}
+                                                </td>
+                                              
+                                            </tr>
+                                            <tr style="border-width: 0px;">
+                                                <td colspan="3" style="border-width: 0px;">
+                                                    <p style="font-size: 10px;">* Value that is added to the value regardless of consumption</p>
+                                                    <p style="font-size: 10px;">** Value used to calculate the cost relative to individual consumption</p>
+                                                    <p style="font-size: 10px;">*** Correction coefficient for the total EDM invoice</p>
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                             
+                            </div>
+                         
+
+                     
+                        
+                         
+                       
+                         
+                       
+
+
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="bg-secondary" style="font-size: 10px;">Name:</th>
+                                        <th class="bg-secondary" style="font-size: 10px;">Cliente:</th>
+                                        <th class="bg-secondary" style="font-size: 10px;">
+                                            Meter:
+                                        </th>
+                                        <th class="bg-secondary" style="font-size: 10px;">
+                                            Custo:
+                                        </th>
+                                        <th class="bg-secondary" style="font-size: 10px;">
+                                            62%
+                                        </th>
+                                        <th class="bg-secondary" style="font-size: 10px;">Iva:</th>
+                                        <th class="bg-secondary" style="font-size: 10px;">Total:</th>
+                                        <th class="bg-secondary" style="font-size: 10px;">Total Fatura:</th>
+                                        <th class="bg-secondary" style="font-size: 10px;">Ação:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(actualData,index) in retrievedData.energy_invoice_items" :key="actualData.id">
+                                        <td style="font-size: 10px;">
+                                           {{ actualData.equipment.name}} - {{ actualData.equipment.ref  }}
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                          {{ actualData.destination.name }}
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           
+                                           {{ formatCurrency(actualData.apr_consumption) }}
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           {{ formatCurrency(actualData.cost) }} MT
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           {{ formatCurrency(actualData.percentage_value) }} MT
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           {{ formatCurrency(actualData.tax_iva) }} MT
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           {{ formatCurrency(actualData.total) }} MT
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           {{ formatCurrency(actualData.total_to_invoice) }} MT
+                                        </td>
+                                        <td style="font-size: 10px;">
+                                           <router-link :to="'/admin/energyinvoice/client/'+actualData.id"><vue-feather type="eye"></vue-feather></router-link>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                         
+                          
+
+                          
+
+
+
+
+                       
+
+                            
+                           
+                        
+                        
+                                    </div>
+
+                        <div class="text-center">
+                            <button
+                                @click="downloadMcscr"
+                                class="btn btn-primary"
+                                :disabled="loadingprint"
+                            >
+                                <div
+                                    v-if="loadingprint"
+                                    class="spinner-border spinner-border-sm"
+                                    role="status"
+                                ></div>
+                                <span v-else>Print</span>
+                            </button>
+                            <div
+                                v-if="loadingprint"
+                                class="d-flex justify-content-center"
+                            >
+                                Aguarde, Estamos gerando o seu documento...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-else>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+                <br />
+                <div class="d-flex justify-content-center">
+                    Carregando Dados...
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
