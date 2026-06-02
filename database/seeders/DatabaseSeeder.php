@@ -148,13 +148,13 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        \App\Models\CompanyConfig::factory()->create(
-            [
-                'id'=>1,
-                'name'=>'INOVATIS MZ LTD',
-                'image'=>'/files/img/sys/image.png'
-            ],
-        );
+        // \App\Models\CompanyConfig::factory()->create(
+        //     [
+        //         'id'=>1,
+        //         'name'=>'INOVATIS MZ LTD',
+        //         'image'=>'/files/img/sys/image.png'
+        //     ],
+        // );
 
         // DB::table('hours_distance_equipment')->insert([
         //     ["date"=> "2021-12-18", "equipment_id"=> 72, "type_equipment_id"=>1, "destination_id"=>6,"area_id"=>2, "created_at"=>now(),"updated_at"=>now(), "distance_control_id"=>2 , "value"=> 0],
