@@ -479,10 +479,13 @@
                                 <select id="payment_method" v-model="paymentMethod" class="form-select">
                                     <option value="">Selecione...</option>
                                     <option value="cash">Dinheiro</option>
+                                    <option value="mpesa">Mpesa</option>
+                                    <option value="emola">Emola</option>
                                     <option value="transfer">Transferência</option>
                                     <option value="check">Cheque</option>
                                     <option value="card">Cartão</option>
                                     <option value="pix">PIX</option>
+                                    
                                 </select>
                             </div>
                             
