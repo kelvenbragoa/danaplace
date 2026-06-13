@@ -212,7 +212,73 @@
 						Operação
 					</li> --}}
 					
+					<!-- ============================================ -->
+					<!-- NOVO MÓDULO: PRODUÇÃO AVÍCOLA (OVOS)          -->
+					<!-- ============================================ -->
+					<li class="sidebar-header">
+						Produção Avícola
+					</li>
+					<li class="sidebar-item">
+						<a data-target="#poultry" data-toggle="collapse" class="sidebar-link collapsed">
+							<i class="align-middle" data-feather="globe"></i> <span class="align-middle">Gestão de Ovos</span>
+						</a>
+						<ul id="poultry" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebar">
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/granjas">Granjas</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/galpoes">Galpões</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/lotes">Lotes</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/producao-diaria">Produção Diária</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/mortalidade">Mortalidade</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/calendario-vacinal">Calendário Vacinal</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/classificacao-ovos">Classificação de Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/estoque-ovos">Estoque de Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/expedicao-ovos">Expedição</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/rastreabilidade">Rastreabilidade</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/dashboard-ovos">Dashboard Ovos</router-link></li>
+						</ul>
+					</li>
 
+					<li class="sidebar-item">
+						<a data-target="#egg-masters" data-toggle="collapse" class="sidebar-link collapsed">
+							<i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Indicadores Avícolas</span>
+						</a>
+						<ul id="egg-masters" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebar">
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/kpi-postura">KPIs de Postura</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/kpi-mortalidade">Taxa de Mortalidade</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/kpi-conversao">Conversão Alimentar</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/curva-postura">Curva de Postura</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/ranking-galpoes">Ranking de Galpões</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/custo-duzia">Custo por Dúzia</router-link></li>
+						</ul>
+					</li>
+
+					<li class="sidebar-item">
+						<a data-target="#egg-reports" data-toggle="collapse" class="sidebar-link collapsed">
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Relatórios Ovos</span>
+						</a>
+						<ul id="egg-reports" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebar">
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/relatorio-producao-diaria">Relatório Produção Diária</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/relatorio-refugos">Relatório de Refugos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/relatorio-estoque-ovos">Relatório Estoque Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/relatorio-sanitario">Relatório Sanitário</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/relatorio-rastreabilidade">Relatório Rastreabilidade</router-link></li>
+						</ul>
+					</li>
+
+					<li class="sidebar-item">
+						<a data-target="#egg-config" data-toggle="collapse" class="sidebar-link collapsed">
+							<i class="align-middle" data-feather="settings"></i> <span class="align-middle">Configurações Avícolas</span>
+						</a>
+						<ul id="egg-config" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebar">
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/linhagens">Linhagens</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/categorias-ovos">Categorias de Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/motivos-refugo">Motivos de Refugo</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/vacinas">Vacinas</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/alertas-ovos">Alertas</router-link></li>
+						</ul>
+					</li>
+					<!-- ============================================ -->
+					<!-- FIM DO MÓDULO DE OVOS                          -->
+					<!-- ============================================ -->
 					
 
 					

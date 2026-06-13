@@ -23,6 +23,7 @@ const modules = ref([
   { id: 4, name: "Logística", icon: "truck", description: "Gestão de transportes e distribuição." },
   { id: 5, name: "Atas de Reunião", icon: "file-text", description: "Criação e organização de atas de reunião." },
   { id: 6, name: "Orçamento e Procurement", icon: "dollar-sign", description: "Planejamento orçamentário e aquisição de materiais." },
+  { id: 7, name: "Produção Avícola", icon: "dollar-sign", description: "Gerencie a produção avícola." },
 ]);
 
 // Filtragem dos módulos com base na pesquisa
@@ -83,8 +84,6 @@ onUnmounted(() => {
             </div>
           </router-link>
           </div>
-        
-        
       </div>
     </div>
     </div>
