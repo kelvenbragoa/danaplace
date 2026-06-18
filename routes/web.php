@@ -2,6 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\EggManagement\DailyProductionController;
+use App\Http\Controllers\EggManagement\EggAlertController;
+use App\Http\Controllers\EggManagement\EggCategoryController;
+use App\Http\Controllers\EggManagement\EggClassificationController;
+use App\Http\Controllers\EggManagement\EggController;
+use App\Http\Controllers\EggManagement\EggDashboardController;
+use App\Http\Controllers\EggManagement\EggInventoryController;
+use App\Http\Controllers\EggManagement\EggKpiController;
+use App\Http\Controllers\EggManagement\EggOrderController;
+use App\Http\Controllers\EggManagement\EggReportController;
+use App\Http\Controllers\EggManagement\EggShippingController;
+use App\Http\Controllers\EggManagement\EggTraceabilityController;
+use App\Http\Controllers\EggManagement\FarmController;
+use App\Http\Controllers\EggManagement\FlockController;
+use App\Http\Controllers\EggManagement\HouseController;
+use App\Http\Controllers\EggManagement\LineageController;
+use App\Http\Controllers\EggManagement\MortalityController;
+use App\Http\Controllers\EggManagement\PackagingController;
+use App\Http\Controllers\EggManagement\RejectReasonController;
+use App\Http\Controllers\EggManagement\VaccinationScheduleController;
+use App\Http\Controllers\EggManagement\VaccineController;
 
 /*
 |--------------------------------------------------------------------------
@@ -404,6 +425,207 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
     Route::delete('expenses/{id}/attachment', [App\Http\Controllers\Admin\ExpenseController::class, 'removeAttachment'])->name('expenses.remove-attachment');
 
 
+    Route::prefix('admin')->group(function () {
+    
+        // ============================================
+        // 1. Farm Management
+        // ============================================
+        Route::get('farms-all', [FarmController::class, 'getAll'])->name('farms.all');
+        Route::resource('farms', FarmController::class);
+        Route::post('farms/{farm}/toggle-status', [FarmController::class, 'toggleStatus'])->name('farms.toggle-status');
+        Route::get('farms-export', [FarmController::class, 'export'])->name('farms.export');
+    
+        // ============================================
+        // 2. House Management
+        // ============================================
+        Route::get('houses-all', [HouseController::class, 'getAll'])->name('houses.all');
+        Route::resource('houses', HouseController::class);
+        Route::post('houses/{house}/toggle-status', [HouseController::class, 'toggleStatus'])->name('houses.toggle-status');
+        Route::get('houses-by-farm/{farm}', [HouseController::class, 'getByFarm'])->name('houses.by-farm');
+    
+        // ============================================
+        // 3. Lineage Management
+        // ============================================
+        Route::get('lineages-all', [LineageController::class, 'getAll'])->name('lineages.all');
+        Route::resource('lineages', LineageController::class);
+        Route::post('lineages/{lineage}/toggle-status', [LineageController::class, 'toggleStatus'])->name('lineages.toggle-status');
+    
+        // ============================================
+        // 4. Flock Management
+        // ============================================
+        Route::get('flocks-all', [FlockController::class, 'getAll'])->name('flocks.all');
+        Route::get('flocks-active', [FlockController::class, 'getActive'])->name('flocks.active');
+        Route::resource('flocks', FlockController::class);
+        Route::post('flocks/{flock}/change-status', [FlockController::class, 'changeStatus'])->name('flocks.change-status');
+        Route::get('flocks/{flock}/production-chart', [FlockController::class, 'productionChart'])->name('flocks.production-chart');
+        Route::post('flocks/{flock}/dispose', [FlockController::class, 'dispose'])->name('flocks.dispose');
+    
+        // ============================================
+        // 5. Daily Production
+        // ============================================
+        Route::resource('daily-production', DailyProductionController::class);
+        Route::post('daily-production/bulk-store', [DailyProductionController::class, 'bulkStore'])->name('daily-production.bulk-store');
+        Route::get('daily-production/by-flock/{flock}', [DailyProductionController::class, 'getByFlock'])->name('daily-production.by-flock');
+        Route::get('daily-production/by-date/{date}', [DailyProductionController::class, 'getByDate'])->name('daily-production.by-date');
+    
+        // ============================================
+        // 6. Mortality Management
+        // ============================================
+        Route::get('mortality/dashboard-stats', [MortalityController::class, 'dashboardStats'])->name('mortality.dashboard-stats');
+        Route::get('mortality/by-flock/{flock}', [MortalityController::class, 'getByFlock'])->name('mortality.by-flock');
+        Route::resource('mortality', MortalityController::class);
+    
+        // ============================================
+        // 7. Vaccine Management
+        // ============================================
+        Route::get('vaccines-all', [VaccineController::class, 'getAll'])->name('vaccines.all');
+        Route::get('vaccines/expiring-soon', [VaccineController::class, 'expiringSoon'])->name('vaccines.expiring-soon');
+        Route::resource('vaccines', VaccineController::class);
+        Route::post('vaccines/{vaccine}/adjust-stock', [VaccineController::class, 'adjustStock'])->name('vaccines.adjust-stock');
+    
+        // ============================================
+        // 8. Vaccination Schedule
+        // ============================================
+        Route::get('vaccination-schedule/pending-today', [VaccinationScheduleController::class, 'pendingToday'])->name('vaccination-schedule.pending-today');
+        Route::get('vaccination-schedule/by-flock/{flock}', [VaccinationScheduleController::class, 'getByFlock'])->name('vaccination-schedule.by-flock');
+        Route::resource('vaccination-schedule', VaccinationScheduleController::class);
+        Route::post('vaccination-schedule/{vaccination_schedule}/apply', [VaccinationScheduleController::class, 'apply'])->name('vaccination-schedule.apply');
+        Route::post('vaccination-schedule/{vaccination_schedule}/cancel', [VaccinationScheduleController::class, 'cancel'])->name('vaccination-schedule.cancel');
+    
+        // ============================================
+        // 9. Egg Categories
+        // ============================================
+        Route::get('egg-categories-all', [EggCategoryController::class, 'getAll'])->name('egg-categories.all');
+        Route::post('egg-categories/{egg_category}/toggle-status', [EggCategoryController::class, 'toggleStatus'])->name('egg-categories.toggle-status');
+        Route::resource('egg-categories', EggCategoryController::class);
+    
+        // ============================================
+        // 10. Egg Classification
+        // ============================================
+        Route::get('egg-classifications/reject-report', [EggClassificationController::class, 'rejectReport'])->name('egg-classifications.reject-report');
+        Route::get('egg-classifications-all', [EggClassificationController::class, 'getAll'])->name('egg-classifications.all');
+        Route::get('egg-classifications/by-flock/{flock}', [EggClassificationController::class, 'getByFlock'])->name('egg-classifications.by-flock');
+        Route::post('egg-classifications/process', [EggClassificationController::class, 'process'])->name('egg-classifications.process');
+        Route::resource('egg-classifications', EggClassificationController::class);
+    
+        // ============================================
+        // 11. Egg Management (Individual Eggs)
+        // ============================================
+        Route::get('eggs-all', [EggController::class, 'getAll'])->name('eggs.all');
+        Route::get('eggs/traceability/{code}', [EggController::class, 'getByTraceabilityCode'])->name('eggs.by-traceability');
+        Route::post('eggs/bulk-classify', [EggController::class, 'bulkClassify'])->name('eggs.bulk-classify');
+        Route::resource('eggs', EggController::class);
+    
+        // ============================================
+        // 12. Packaging Management
+        // ============================================
+        Route::get('packaging/generate-qr/{packaging}', [PackagingController::class, 'generateQrCode'])->name('packaging.generate-qr');
+        Route::post('packaging/validate-qr', [PackagingController::class, 'validateQrCode'])->name('packaging.validate-qr');
+        Route::resource('packaging', PackagingController::class);
+    
+        // ============================================
+        // 13. Egg Inventory
+        // ============================================
+        Route::get('egg-inventory/fifo-list', [EggInventoryController::class, 'fifoList'])->name('egg-inventory.fifo-list');
+        Route::get('egg-inventory/stock-alerts', [EggInventoryController::class, 'stockAlerts'])->name('egg-inventory.stock-alerts');
+        Route::get('egg-inventory/by-category/{category}', [EggInventoryController::class, 'getByCategory'])->name('egg-inventory.by-category');
+        Route::post('egg-inventory/{egg_inventory}/reserve', [EggInventoryController::class, 'reserve'])->name('egg-inventory.reserve');
+        Route::post('egg-inventory/{egg_inventory}/release', [EggInventoryController::class, 'release'])->name('egg-inventory.release');
+        Route::resource('egg-inventory', EggInventoryController::class);
+    
+        // ============================================
+        // 14. Egg Orders (Sales)
+        // ============================================
+        Route::get('egg-orders/pending-orders', [EggOrderController::class, 'pendingOrders'])->name('egg-orders.pending');
+        Route::get('egg-orders/invoice/{egg_order}', [EggOrderController::class, 'generateInvoice'])->name('egg-orders.invoice');
+        Route::post('egg-orders/{egg_order}/approve', [EggOrderController::class, 'approve'])->name('egg-orders.approve');
+        Route::post('egg-orders/{egg_order}/cancel', [EggOrderController::class, 'cancel'])->name('egg-orders.cancel');
+        Route::post('egg-orders/{egg_order}/pick', [EggOrderController::class, 'pick'])->name('egg-orders.pick');
+        Route::resource('egg-orders', EggOrderController::class);
+    
+        // ============================================
+        // 15. Egg Shipping / Expedition
+        // ============================================
+        Route::get('egg-shipping/today-shipping', [EggShippingController::class, 'todayShipping'])->name('egg-shipping.today');
+        Route::get('egg-shipping/invoice/{egg_shipping}/print', [EggShippingController::class, 'printInvoice'])->name('egg-shipping.print-invoice');
+        Route::post('egg-shipping/validate-temperature', [EggShippingController::class, 'validateTemperature'])->name('egg-shipping.validate-temperature');
+        Route::post('egg-shipping/{egg_shipping}/dispatch', [EggShippingController::class, 'dispatch'])->name('egg-shipping.dispatch');
+        Route::resource('egg-shipping', EggShippingController::class);
+    
+        // ============================================
+        // 16. Egg Traceability
+        // ============================================
+        Route::prefix('traceability')->name('traceability.')->group(function () {
+            Route::get('search', [EggTraceabilityController::class, 'search'])->name('search');
+            Route::get('by-date-range', [EggTraceabilityController::class, 'byDateRange'])->name('by-date-range');
+            Route::get('export', [EggTraceabilityController::class, 'export'])->name('export');
+            Route::get('by-flock/{flock}', [EggTraceabilityController::class, 'byFlock'])->name('by-flock');
+            Route::get('by-packaging/{packaging}', [EggTraceabilityController::class, 'byPackage'])->name('by-package');
+            Route::get('qr/{code}', [EggTraceabilityController::class, 'showByQrCode'])->name('qr');
+            Route::get('/', [EggTraceabilityController::class, 'index'])->name('index');
+        });
+    
+        // ============================================
+        // 17. Egg Dashboard (BI / KPIs)
+        // ============================================
+        Route::prefix('egg-dashboard')->name('egg-dashboard.')->group(function () {
+            Route::get('/', [EggDashboardController::class, 'index'])->name('index');
+            Route::get('production-stats', [EggDashboardController::class, 'productionStats'])->name('production-stats');
+            Route::get('mortality-stats', [EggDashboardController::class, 'mortalityStats'])->name('mortality-stats');
+            Route::get('inventory-stats', [EggDashboardController::class, 'inventoryStats'])->name('inventory-stats');
+            Route::get('financial-stats', [EggDashboardController::class, 'financialStats'])->name('financial-stats');
+            Route::get('realtime-alerts', [EggDashboardController::class, 'realtimeAlerts'])->name('realtime-alerts');
+        });
+    
+        // ============================================
+        // 18. Egg KPIs (Indicators)
+        // ============================================
+        Route::prefix('egg-kpis')->name('egg-kpis.')->group(function () {
+            Route::get('laying-rate', [EggKpiController::class, 'layingRate'])->name('laying-rate');
+            Route::get('mortality-rate', [EggKpiController::class, 'mortalityRate'])->name('mortality-rate');
+            Route::get('feed-conversion', [EggKpiController::class, 'feedConversion'])->name('feed-conversion');
+            Route::get('laying-curve', [EggKpiController::class, 'layingCurve'])->name('laying-curve');
+            Route::get('house-ranking', [EggKpiController::class, 'houseRanking'])->name('house-ranking');
+            Route::get('cost-per-dozen', [EggKpiController::class, 'costPerDozen'])->name('cost-per-dozen');
+            Route::get('reject-rate', [EggKpiController::class, 'rejectRate'])->name('reject-rate');
+            Route::get('efficiency-index', [EggKpiController::class, 'efficiencyIndex'])->name('efficiency-index');
+        });
+    
+        // ============================================
+        // 19. Egg Reports
+        // ============================================
+        Route::prefix('egg-reports')->name('egg-reports.')->group(function () {
+            Route::get('export-excel/{report}', [EggReportController::class, 'exportExcel'])->name('export-excel');
+            Route::get('export-pdf/{report}/{format?}', [EggReportController::class, 'exportPdf'])->name('export-pdf');
+            Route::get('daily-production', [EggReportController::class, 'dailyProduction'])->name('daily-production');
+            Route::get('rejects', [EggReportController::class, 'rejects'])->name('rejects');
+            Route::get('inventory', [EggReportController::class, 'inventory'])->name('inventory');
+            Route::get('sanitary', [EggReportController::class, 'sanitary'])->name('sanitary');
+            Route::get('traceability', [EggReportController::class, 'traceability'])->name('traceability');
+            Route::get('vaccination', [EggReportController::class, 'vaccination'])->name('vaccination');
+            Route::get('financial', [EggReportController::class, 'financial'])->name('financial');
+        });
+    
+        // ============================================
+        // 20. Egg Alerts
+        // ============================================
+        Route::prefix('egg-alerts')->name('egg-alerts.')->group(function () {
+            Route::get('unread-count', [EggAlertController::class, 'unreadCount'])->name('unread-count');
+            Route::post('bulk-mark-read', [EggAlertController::class, 'bulkMarkAsRead'])->name('bulk-mark-read');
+            Route::get('trigger-test', [EggAlertController::class, 'triggerTestAlert'])->name('trigger-test');
+            Route::get('/', [EggAlertController::class, 'index'])->name('index');
+            Route::get('{egg_alert}', [EggAlertController::class, 'show'])->name('show');
+            Route::post('{egg_alert}/mark-as-read', [EggAlertController::class, 'markAsRead'])->name('mark-as-read');
+            Route::post('{egg_alert}/mark-as-resolved', [EggAlertController::class, 'markAsResolved'])->name('mark-as-resolved');
+        });
+    
+        // ============================================
+        // 21. Reject Reasons (Configuration)
+        // ============================================
+        Route::get('reject-reasons-all', [RejectReasonController::class, 'getAll'])->name('reject-reasons.all');
+        Route::post('reject-reasons/{reject_reason}/toggle-status', [RejectReasonController::class, 'toggleStatus'])->name('reject-reasons.toggle-status');
+        Route::resource('reject-reasons', RejectReasonController::class);
+    });
 });
 
 

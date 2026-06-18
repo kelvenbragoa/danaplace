@@ -315,6 +315,106 @@ import CreateExpense from './pages/admin/expenses/Create.vue';
 import ShowExpense from './pages/admin/expenses/Show.vue';
 import EditExpense from './pages/admin/expenses/Edit.vue';
 
+import IndexFarms from './pages/admin/egg-module/farms/IndexFarms.vue';
+import CreateFarms from './pages/admin/egg-module/farms/CreateFarms.vue';
+import ShowFarms from './pages/admin/egg-module/farms/ShowFarms.vue';
+import EditFarms from './pages/admin/egg-module/farms/EditFarms.vue';
+
+import IndexHouses from './pages/admin/egg-module/houses/IndexHouses.vue';
+import CreateHouses from './pages/admin/egg-module/houses/CreateHouses.vue';
+import ShowHouses from './pages/admin/egg-module/houses/ShowHouses.vue';
+import EditHouses from './pages/admin/egg-module/houses/EditHouses.vue';
+
+import IndexFlocks from './pages/admin/egg-module/flocks/IndexFlocks.vue';
+import CreateFlocks from './pages/admin/egg-module/flocks/CreateFlocks.vue';
+import ShowFlocks from './pages/admin/egg-module/flocks/ShowFlocks.vue';
+import EditFlocks from './pages/admin/egg-module/flocks/EditFlocks.vue';
+
+import IndexLineages from './pages/admin/egg-module/lineages/IndexLineages.vue';
+import CreateLineages from './pages/admin/egg-module/lineages/CreateLineages.vue';
+import ShowLineages from './pages/admin/egg-module/lineages/ShowLineages.vue';
+import EditLineages from './pages/admin/egg-module/lineages/EditLineages.vue';
+
+import IndexDailyProduction from './pages/admin/egg-module/daily-production/IndexDailyProduction.vue';
+import CreateDailyProduction from './pages/admin/egg-module/daily-production/CreateDailyProduction.vue';
+import ShowDailyProduction from './pages/admin/egg-module/daily-production/ShowDailyProduction.vue';
+import EditDailyProduction from './pages/admin/egg-module/daily-production/EditDailyProduction.vue';
+
+import IndexMortality from './pages/admin/egg-module/mortality/IndexMortality.vue';
+import CreateMortality from './pages/admin/egg-module/mortality/CreateMortality.vue';
+import ShowMortality from './pages/admin/egg-module/mortality/ShowMortality.vue';
+import EditMortality from './pages/admin/egg-module/mortality/EditMortality.vue';
+
+import IndexVaccinationSchedule from './pages/admin/egg-module/vaccination-schedule/IndexVaccinationSchedule.vue';
+import CreateVaccinationSchedule from './pages/admin/egg-module/vaccination-schedule/CreateVaccinationSchedule.vue';
+import ShowVaccinationSchedule from './pages/admin/egg-module/vaccination-schedule/ShowVaccinationSchedule.vue';
+import EditVaccinationSchedule from './pages/admin/egg-module/vaccination-schedule/EditVaccinationSchedule.vue';
+
+import IndexVaccines from './pages/admin/egg-module/vaccines/IndexVaccines.vue';
+import CreateVaccines from './pages/admin/egg-module/vaccines/CreateVaccines.vue';
+import ShowVaccines from './pages/admin/egg-module/vaccines/ShowVaccines.vue';
+import EditVaccines from './pages/admin/egg-module/vaccines/EditVaccines.vue';
+
+import IndexEggClassifications from './pages/admin/egg-module/egg-classifications/IndexEggClassifications.vue';
+import CreateEggClassifications from './pages/admin/egg-module/egg-classifications/CreateEggClassifications.vue';
+import ShowEggClassifications from './pages/admin/egg-module/egg-classifications/ShowEggClassifications.vue';
+import EditEggClassifications from './pages/admin/egg-module/egg-classifications/EditEggClassifications.vue';
+
+import IndexEggInventory from './pages/admin/egg-module/egg-inventory/IndexEggInventory.vue';
+import CreateEggInventory from './pages/admin/egg-module/egg-inventory/CreateEggInventory.vue';
+import ShowEggInventory from './pages/admin/egg-module/egg-inventory/ShowEggInventory.vue';
+import EditEggInventory from './pages/admin/egg-module/egg-inventory/EditEggInventory.vue';
+
+import IndexRejectReasons from './pages/admin/egg-module/reject-reasons/IndexRejectReasons.vue';
+import CreateRejectReasons from './pages/admin/egg-module/reject-reasons/CreateRejectReasons.vue';
+import ShowRejectReasons from './pages/admin/egg-module/reject-reasons/ShowRejectReasons.vue';
+import EditRejectReasons from './pages/admin/egg-module/reject-reasons/EditRejectReasons.vue';
+
+import IndexEggCategories from './pages/admin/egg-module/egg-categories/IndexEggCategories.vue';
+import CreateEggCategories from './pages/admin/egg-module/egg-categories/CreateEggCategories.vue';
+import ShowEggCategories from './pages/admin/egg-module/egg-categories/ShowEggCategories.vue';
+import EditEggCategories from './pages/admin/egg-module/egg-categories/EditEggCategories.vue';
+
+import IndexEggs from './pages/admin/egg-module/eggs/IndexEggs.vue';
+import CreateEggs from './pages/admin/egg-module/eggs/CreateEggs.vue';
+import ShowEggs from './pages/admin/egg-module/eggs/ShowEggs.vue';
+import EditEggs from './pages/admin/egg-module/eggs/EditEggs.vue';
+
+import IndexPackaging from './pages/admin/egg-module/packaging/IndexPackaging.vue';
+import CreatePackaging from './pages/admin/egg-module/packaging/CreatePackaging.vue';
+import ShowPackaging from './pages/admin/egg-module/packaging/ShowPackaging.vue';
+import EditPackaging from './pages/admin/egg-module/packaging/EditPackaging.vue';
+
+import IndexEggOrders from './pages/admin/egg-module/egg-orders/IndexEggOrders.vue';
+import CreateEggOrders from './pages/admin/egg-module/egg-orders/CreateEggOrders.vue';
+import ShowEggOrders from './pages/admin/egg-module/egg-orders/ShowEggOrders.vue';
+import EditEggOrders from './pages/admin/egg-module/egg-orders/EditEggOrders.vue';
+
+import IndexEggShipping from './pages/admin/egg-module/egg-shipping/IndexEggShipping.vue';
+import CreateEggShipping from './pages/admin/egg-module/egg-shipping/CreateEggShipping.vue';
+import ShowEggShipping from './pages/admin/egg-module/egg-shipping/ShowEggShipping.vue';
+import EditEggShipping from './pages/admin/egg-module/egg-shipping/EditEggShipping.vue';
+
+import IndexTraceability from './pages/admin/egg-module/traceability/IndexTraceability.vue';
+import ShowTraceability from './pages/admin/egg-module/traceability/ShowTraceability.vue';
+import EggDashboard from './pages/admin/egg-module/dashboard/EggDashboard.vue';
+
+import IndexEggAlerts from './pages/admin/egg-module/egg-alerts/IndexEggAlerts.vue';
+import ShowEggAlerts from './pages/admin/egg-module/egg-alerts/ShowEggAlerts.vue';
+
+import KpiLayingRate from './pages/admin/egg-module/kpis/KpiLayingRate.vue';
+import KpiMortalityRate from './pages/admin/egg-module/kpis/KpiMortalityRate.vue';
+import KpiFeedConversion from './pages/admin/egg-module/kpis/KpiFeedConversion.vue';
+import KpiLayingCurve from './pages/admin/egg-module/kpis/KpiLayingCurve.vue';
+import KpiHouseRanking from './pages/admin/egg-module/kpis/KpiHouseRanking.vue';
+import KpiCostPerDozen from './pages/admin/egg-module/kpis/KpiCostPerDozen.vue';
+
+import ReportDailyProduction from './pages/admin/egg-module/reports/ReportDailyProduction.vue';
+import ReportRejects from './pages/admin/egg-module/reports/ReportRejects.vue';
+import ReportInventory from './pages/admin/egg-module/reports/ReportInventory.vue';
+import ReportSanitary from './pages/admin/egg-module/reports/ReportSanitary.vue';
+import ReportTraceability from './pages/admin/egg-module/reports/ReportTraceability.vue';
+
 import IndexSalaryProcess from './pages/admin/salaryprocess/IndexSalaryProcess.vue';
 import CreateSalaryProcess from './pages/admin/salaryprocess/CreateSalaryProcess.vue';
 import ShowSalaryProcess from './pages/admin/salaryprocess/ShowSalaryProcess.vue';
@@ -1873,6 +1973,448 @@ export default [
         path: '/admin/vacation-plans/:id/edit',
         name: 'admin.vacation-plans.edit',
         component: EditVacationPlan,
+    },
+
+    //granjas (produção avícola)
+    {
+        path: '/admin/granjas',
+        name: 'admin.granjas.index',
+        component: IndexFarms,
+    },
+    {
+        path: '/admin/granjas/create',
+        name: 'admin.granjas.create',
+        component: CreateFarms,
+    },
+    {
+        path: '/admin/granjas/:id',
+        name: 'admin.granjas.show',
+        component: ShowFarms,
+    },
+    {
+        path: '/admin/granjas/:id/edit',
+        name: 'admin.granjas.edit',
+        component: EditFarms,
+    },
+
+    //galpões (produção avícola)
+    {
+        path: '/admin/galpoes',
+        name: 'admin.galpoes.index',
+        component: IndexHouses,
+    },
+    {
+        path: '/admin/galpoes/create',
+        name: 'admin.galpoes.create',
+        component: CreateHouses,
+    },
+    {
+        path: '/admin/galpoes/:id',
+        name: 'admin.galpoes.show',
+        component: ShowHouses,
+    },
+    {
+        path: '/admin/galpoes/:id/edit',
+        name: 'admin.galpoes.edit',
+        component: EditHouses,
+    },
+
+    //lotes (produção avícola)
+    {
+        path: '/admin/lotes',
+        name: 'admin.lotes.index',
+        component: IndexFlocks,
+    },
+    {
+        path: '/admin/lotes/create',
+        name: 'admin.lotes.create',
+        component: CreateFlocks,
+    },
+    {
+        path: '/admin/lotes/:id',
+        name: 'admin.lotes.show',
+        component: ShowFlocks,
+    },
+    {
+        path: '/admin/lotes/:id/edit',
+        name: 'admin.lotes.edit',
+        component: EditFlocks,
+    },
+
+    //linhagens (produção avícola)
+    {
+        path: '/admin/linhagens',
+        name: 'admin.linhagens.index',
+        component: IndexLineages,
+    },
+    {
+        path: '/admin/linhagens/create',
+        name: 'admin.linhagens.create',
+        component: CreateLineages,
+    },
+    {
+        path: '/admin/linhagens/:id',
+        name: 'admin.linhagens.show',
+        component: ShowLineages,
+    },
+    {
+        path: '/admin/linhagens/:id/edit',
+        name: 'admin.linhagens.edit',
+        component: EditLineages,
+    },
+
+    //produção diária (produção avícola)
+    {
+        path: '/admin/producao-diaria',
+        name: 'admin.producao-diaria.index',
+        component: IndexDailyProduction,
+    },
+    {
+        path: '/admin/producao-diaria/create',
+        name: 'admin.producao-diaria.create',
+        component: CreateDailyProduction,
+    },
+    {
+        path: '/admin/producao-diaria/:id',
+        name: 'admin.producao-diaria.show',
+        component: ShowDailyProduction,
+    },
+    {
+        path: '/admin/producao-diaria/:id/edit',
+        name: 'admin.producao-diaria.edit',
+        component: EditDailyProduction,
+    },
+
+    //mortalidade (produção avícola)
+    {
+        path: '/admin/mortalidade',
+        name: 'admin.mortalidade.index',
+        component: IndexMortality,
+    },
+    {
+        path: '/admin/mortalidade/create',
+        name: 'admin.mortalidade.create',
+        component: CreateMortality,
+    },
+    {
+        path: '/admin/mortalidade/:id',
+        name: 'admin.mortalidade.show',
+        component: ShowMortality,
+    },
+    {
+        path: '/admin/mortalidade/:id/edit',
+        name: 'admin.mortalidade.edit',
+        component: EditMortality,
+    },
+
+    //calendário vacinal (produção avícola)
+    {
+        path: '/admin/calendario-vacinal',
+        name: 'admin.calendario-vacinal.index',
+        component: IndexVaccinationSchedule,
+    },
+    {
+        path: '/admin/calendario-vacinal/create',
+        name: 'admin.calendario-vacinal.create',
+        component: CreateVaccinationSchedule,
+    },
+    {
+        path: '/admin/calendario-vacinal/:id',
+        name: 'admin.calendario-vacinal.show',
+        component: ShowVaccinationSchedule,
+    },
+    {
+        path: '/admin/calendario-vacinal/:id/edit',
+        name: 'admin.calendario-vacinal.edit',
+        component: EditVaccinationSchedule,
+    },
+
+    //vacinas (configurações avícolas)
+    {
+        path: '/admin/vacinas',
+        name: 'admin.vacinas.index',
+        component: IndexVaccines,
+    },
+    {
+        path: '/admin/vacinas/create',
+        name: 'admin.vacinas.create',
+        component: CreateVaccines,
+    },
+    {
+        path: '/admin/vacinas/:id',
+        name: 'admin.vacinas.show',
+        component: ShowVaccines,
+    },
+    {
+        path: '/admin/vacinas/:id/edit',
+        name: 'admin.vacinas.edit',
+        component: EditVaccines,
+    },
+
+    //classificação de ovos (produção avícola)
+    {
+        path: '/admin/classificacao-ovos',
+        name: 'admin.classificacao-ovos.index',
+        component: IndexEggClassifications,
+    },
+    {
+        path: '/admin/classificacao-ovos/create',
+        name: 'admin.classificacao-ovos.create',
+        component: CreateEggClassifications,
+    },
+    {
+        path: '/admin/classificacao-ovos/:id',
+        name: 'admin.classificacao-ovos.show',
+        component: ShowEggClassifications,
+    },
+    {
+        path: '/admin/classificacao-ovos/:id/edit',
+        name: 'admin.classificacao-ovos.edit',
+        component: EditEggClassifications,
+    },
+
+    //estoque de ovos (produção avícola)
+    {
+        path: '/admin/estoque-ovos',
+        name: 'admin.estoque-ovos.index',
+        component: IndexEggInventory,
+    },
+    {
+        path: '/admin/estoque-ovos/create',
+        name: 'admin.estoque-ovos.create',
+        component: CreateEggInventory,
+    },
+    {
+        path: '/admin/estoque-ovos/:id',
+        name: 'admin.estoque-ovos.show',
+        component: ShowEggInventory,
+    },
+    {
+        path: '/admin/estoque-ovos/:id/edit',
+        name: 'admin.estoque-ovos.edit',
+        component: EditEggInventory,
+    },
+
+    //motivos de refugo (produção avícola)
+    {
+        path: '/admin/motivos-refugo',
+        name: 'admin.motivos-refugo.index',
+        component: IndexRejectReasons,
+    },
+    {
+        path: '/admin/motivos-refugo/create',
+        name: 'admin.motivos-refugo.create',
+        component: CreateRejectReasons,
+    },
+    {
+        path: '/admin/motivos-refugo/:id',
+        name: 'admin.motivos-refugo.show',
+        component: ShowRejectReasons,
+    },
+    {
+        path: '/admin/motivos-refugo/:id/edit',
+        name: 'admin.motivos-refugo.edit',
+        component: EditRejectReasons,
+    },
+
+    //categorias de ovos (produção avícola)
+    {
+        path: '/admin/categorias-ovos',
+        name: 'admin.categorias-ovos.index',
+        component: IndexEggCategories,
+    },
+    {
+        path: '/admin/categorias-ovos/create',
+        name: 'admin.categorias-ovos.create',
+        component: CreateEggCategories,
+    },
+    {
+        path: '/admin/categorias-ovos/:id',
+        name: 'admin.categorias-ovos.show',
+        component: ShowEggCategories,
+    },
+    {
+        path: '/admin/categorias-ovos/:id/edit',
+        name: 'admin.categorias-ovos.edit',
+        component: EditEggCategories,
+    },
+
+    //ovos (produção avícola)
+    {
+        path: '/admin/ovos',
+        name: 'admin.ovos.index',
+        component: IndexEggs,
+    },
+    {
+        path: '/admin/ovos/create',
+        name: 'admin.ovos.create',
+        component: CreateEggs,
+    },
+    {
+        path: '/admin/ovos/:id',
+        name: 'admin.ovos.show',
+        component: ShowEggs,
+    },
+    {
+        path: '/admin/ovos/:id/edit',
+        name: 'admin.ovos.edit',
+        component: EditEggs,
+    },
+
+    //embalagem (produção avícola)
+    {
+        path: '/admin/embalagem',
+        name: 'admin.embalagem.index',
+        component: IndexPackaging,
+    },
+    {
+        path: '/admin/embalagem/create',
+        name: 'admin.embalagem.create',
+        component: CreatePackaging,
+    },
+    {
+        path: '/admin/embalagem/:id',
+        name: 'admin.embalagem.show',
+        component: ShowPackaging,
+    },
+    {
+        path: '/admin/embalagem/:id/edit',
+        name: 'admin.embalagem.edit',
+        component: EditPackaging,
+    },
+
+    //pedidos (produção avícola)
+    {
+        path: '/admin/pedidos',
+        name: 'admin.pedidos.index',
+        component: IndexEggOrders,
+    },
+    {
+        path: '/admin/pedidos/create',
+        name: 'admin.pedidos.create',
+        component: CreateEggOrders,
+    },
+    {
+        path: '/admin/pedidos/:id',
+        name: 'admin.pedidos.show',
+        component: ShowEggOrders,
+    },
+    {
+        path: '/admin/pedidos/:id/edit',
+        name: 'admin.pedidos.edit',
+        component: EditEggOrders,
+    },
+
+    //expedição de ovos (produção avícola)
+    {
+        path: '/admin/expedicao-ovos',
+        name: 'admin.expedicao-ovos.index',
+        component: IndexEggShipping,
+    },
+    {
+        path: '/admin/expedicao-ovos/create',
+        name: 'admin.expedicao-ovos.create',
+        component: CreateEggShipping,
+    },
+    {
+        path: '/admin/expedicao-ovos/:id',
+        name: 'admin.expedicao-ovos.show',
+        component: ShowEggShipping,
+    },
+    {
+        path: '/admin/expedicao-ovos/:id/edit',
+        name: 'admin.expedicao-ovos.edit',
+        component: EditEggShipping,
+    },
+
+    //rastreabilidade (produção avícola)
+    {
+        path: '/admin/rastreabilidade',
+        name: 'admin.rastreabilidade.index',
+        component: IndexTraceability,
+    },
+    {
+        path: '/admin/rastreabilidade/detalhe/:code',
+        name: 'admin.rastreabilidade.show',
+        component: ShowTraceability,
+    },
+
+    //dashboard ovos (produção avícola)
+    {
+        path: '/admin/dashboard-ovos',
+        name: 'admin.dashboard-ovos.index',
+        component: EggDashboard,
+    },
+
+    //alertas (produção avícola)
+    {
+        path: '/admin/alertas-ovos',
+        name: 'admin.alertas-ovos.index',
+        component: IndexEggAlerts,
+    },
+    {
+        path: '/admin/alertas-ovos/:id',
+        name: 'admin.alertas-ovos.show',
+        component: ShowEggAlerts,
+    },
+
+    //kpis avícolas
+    {
+        path: '/admin/kpi-postura',
+        name: 'admin.kpi-postura.index',
+        component: KpiLayingRate,
+    },
+    {
+        path: '/admin/kpi-mortalidade',
+        name: 'admin.kpi-mortalidade.index',
+        component: KpiMortalityRate,
+    },
+    {
+        path: '/admin/kpi-conversao',
+        name: 'admin.kpi-conversao.index',
+        component: KpiFeedConversion,
+    },
+    {
+        path: '/admin/curva-postura',
+        name: 'admin.curva-postura.index',
+        component: KpiLayingCurve,
+    },
+    {
+        path: '/admin/ranking-galpoes',
+        name: 'admin.ranking-galpoes.index',
+        component: KpiHouseRanking,
+    },
+    {
+        path: '/admin/custo-duzia',
+        name: 'admin.custo-duzia.index',
+        component: KpiCostPerDozen,
+    },
+
+    //relatórios ovos (produção avícola)
+    {
+        path: '/admin/relatorio-producao-diaria',
+        name: 'admin.relatorio-producao-diaria.index',
+        component: ReportDailyProduction,
+    },
+    {
+        path: '/admin/relatorio-refugos',
+        name: 'admin.relatorio-refugos.index',
+        component: ReportRejects,
+    },
+    {
+        path: '/admin/relatorio-estoque-ovos',
+        name: 'admin.relatorio-estoque-ovos.index',
+        component: ReportInventory,
+    },
+    {
+        path: '/admin/relatorio-sanitario',
+        name: 'admin.relatorio-sanitario.index',
+        component: ReportSanitary,
+    },
+    {
+        path: '/admin/relatorio-rastreabilidade',
+        name: 'admin.relatorio-rastreabilidade.index',
+        component: ReportTraceability,
     },
 
     //expense categories

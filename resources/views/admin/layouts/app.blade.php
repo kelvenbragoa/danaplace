@@ -223,14 +223,18 @@
 							<i class="align-middle" data-feather="globe"></i> <span class="align-middle">Gestão de Ovos</span>
 						</a>
 						<ul id="poultry" class="sidebar-dropdown list-unstyled collapse" data-parent="#sidebar">
-							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/granjas">Granjas</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/granjas">Farmas</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/galpoes">Galpões</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/lotes">Lotes</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/linhagens">Linhagens</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/producao-diaria">Produção Diária</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/mortalidade">Mortalidade</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/calendario-vacinal">Calendário Vacinal</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/classificacao-ovos">Classificação de Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/ovos">Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/embalagem">Embalagem</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/estoque-ovos">Estoque de Ovos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/pedidos">Pedidos</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/expedicao-ovos">Expedição</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/rastreabilidade">Rastreabilidade</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/dashboard-ovos">Dashboard Ovos</router-link></li>
