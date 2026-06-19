@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\Administrator::class,
         'destination.access' => \App\Http\Middleware\DestinationAccess::class,
+        'egg.customer.portal' => \App\Http\Middleware\EnsureEggCustomerPortal::class,
     ];
 }

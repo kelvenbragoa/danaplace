@@ -46,6 +46,7 @@ Componentes em `resources/js/pages/admin/egg-module/<pasta>/`.
 | Ovos | `/admin/ovos` |
 | Embalagem | `/admin/embalagem` |
 | Estoque de Ovos | `/admin/estoque-ovos` |
+| Clientes | `/admin/clientes-ovos` |
 | Pedidos | `/admin/pedidos` |
 | Expedição | `/admin/expedicao-ovos` |
 | Rastreabilidade | `/admin/rastreabilidade` |
@@ -161,17 +162,22 @@ Componentes em `resources/js/pages/admin/egg-module/<pasta>/`.
 | Módulo | Rota Vue | API | Pasta Vue |
 |--------|----------|-----|-----------|
 | Estoque de Ovos | `/admin/estoque-ovos` | `/admin/egg-inventory` | `egg-inventory/` |
+| Clientes | `/admin/clientes-ovos` | `/admin/egg-customers` | `egg-customers/` |
 | Pedidos | `/admin/pedidos` | `/admin/egg-orders` | `egg-orders/` |
 | Expedição | `/admin/expedicao-ovos` | `/admin/egg-shipping` | `egg-shipping/` |
 
 **Estoque:** ovo + galpão + quantidade + data entrada + localização; estados `available` / `reserved` / `shipped`. Ações: reservar e libertar stock.
 
-**Pedidos:** cliente, categoria, dúzias, preço; fluxo de estados:
+**Pedidos:** selecionar cliente registado ou preencher manualmente; categoria, dúzias, preço; fluxo de estados:
 `pending` → `approved` → `picked` → `shipped` (ou `canceled`).
+
+**Clientes:** nome, NIF, contacto, morada; ao criar é gerado automaticamente um **código portal** (`OVOS-XXXXXXXX`) para o cliente aceder a `/portal/pedidos-ovos` e submeter pedidos sozinho. O admin pode copiar o link/código ou regenerar o código.
+
+**Portal do cliente** (`/portal/pedidos-ovos`): login apenas com código; listagem dos próprios pedidos e formulário de novo pedido (sem preço — definido internamente).
 
 **Expedição:** liga pedido (em estado *Separado*) + estoque FIFO; atualiza pedido para `shipped` e estoque para `shipped`.
 
-**APIs auxiliares:** `egg-inventory/fifo-list`, `egg-inventory/stock-alerts`, `egg-orders/pending-orders`
+**APIs auxiliares:** `egg-customers-all`, `egg-inventory/fifo-list`, `egg-inventory/stock-alerts`, `egg-orders/pending-orders`
 
 ---
 
@@ -508,6 +514,8 @@ resources/js/pages/admin/egg-module/
 | `packings` | `2026_06_13_093057_create_packings_table` |
 | `egg_inventories` | `2026_06_13_093107_create_egg_inventories_table` |
 | `egg_orders` | `2026_06_13_093426_create_egg_orders_table` |
+| `egg_customers` | `2026_06_18_100000_create_egg_customers_table` |
+| `egg_orders.customer_id` | `2026_06_18_100001_add_customer_id_to_egg_orders_table` |
 | `egg_shippings` | `2026_06_13_093434_create_egg_shippings_table` |
 | `egg_alerts` | `2026_06_13_093441_create_egg_alerts_table` |
 | `reject_reasons` | `2026_06_18_113335_create_reject_reasons_table` |

@@ -5,6 +5,8 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\EggManagement\DailyProductionController;
 use App\Http\Controllers\EggManagement\EggAlertController;
 use App\Http\Controllers\EggManagement\EggCategoryController;
+use App\Http\Controllers\EggManagement\EggCustomerController;
+use App\Http\Controllers\EggManagement\EggCustomerPortalController;
 use App\Http\Controllers\EggManagement\EggClassificationController;
 use App\Http\Controllers\EggManagement\EggController;
 use App\Http\Controllers\EggManagement\EggDashboardController;
@@ -534,7 +536,14 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         Route::resource('egg-inventory', EggInventoryController::class);
     
         // ============================================
-        // 14. Egg Orders (Sales)
+        // 14. Egg Customers
+        // ============================================
+        Route::get('egg-customers-all', [EggCustomerController::class, 'getAll'])->name('egg-customers.all');
+        Route::post('egg-customers/{egg_customer}/regenerate-portal-code', [EggCustomerController::class, 'regeneratePortalCode'])->name('egg-customers.regenerate-portal-code');
+        Route::resource('egg-customers', EggCustomerController::class);
+
+        // ============================================
+        // 15. Egg Orders (Sales)
         // ============================================
         Route::get('egg-orders/pending-orders', [EggOrderController::class, 'pendingOrders'])->name('egg-orders.pending');
         Route::get('egg-orders/invoice/{egg_order}', [EggOrderController::class, 'generateInvoice'])->name('egg-orders.invoice');
@@ -544,7 +553,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         Route::resource('egg-orders', EggOrderController::class);
     
         // ============================================
-        // 15. Egg Shipping / Expedition
+        // 16. Egg Shipping / Expedition
         // ============================================
         Route::get('egg-shipping/today-shipping', [EggShippingController::class, 'todayShipping'])->name('egg-shipping.today');
         Route::get('egg-shipping/invoice/{egg_shipping}/print', [EggShippingController::class, 'printInvoice'])->name('egg-shipping.print-invoice');
@@ -630,6 +639,23 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
 
 
 
+
+// Portal de pedidos de ovos (clientes)
+Route::prefix('portal/ovos')->group(function () {
+    Route::post('login', [EggCustomerPortalController::class, 'login']);
+    Route::post('logout', [EggCustomerPortalController::class, 'logout']);
+
+    Route::middleware('egg.customer.portal')->group(function () {
+        Route::get('me', [EggCustomerPortalController::class, 'me']);
+        Route::get('categories', [EggCustomerPortalController::class, 'categories']);
+        Route::get('orders', [EggCustomerPortalController::class, 'orders']);
+        Route::post('orders', [EggCustomerPortalController::class, 'storeOrder']);
+    });
+});
+
+Route::get('portal/pedidos-ovos/{any?}', function () {
+    return view('portal.egg.app');
+})->where('any', '.*');
 
 //Ultima rota
 

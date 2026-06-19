@@ -80,7 +80,7 @@ onMounted(() => {
                             <div class="col-md-6">
                                 <h6>Cliente</h6>
                                 <p><strong>Nome:</strong> {{ retrievedData.customer_name }}</p>
-                                <p><strong>NIF:</strong> {{ retrievedData.customer_tax_id || '-' }}</p>
+                                <p><strong>NUIT:</strong> {{ retrievedData.customer_tax_id || '-' }}</p>
                                 <p><strong>Email:</strong> {{ retrievedData.customer_email || '-' }}</p>
                                 <p><strong>Telefone:</strong> {{ retrievedData.customer_phone || '-' }}</p>
                             </div>
@@ -89,7 +89,7 @@ onMounted(() => {
                                 <p><strong>Data:</strong> {{ retrievedData.order_date }}</p>
                                 <p><strong>Entrega Prevista:</strong> {{ retrievedData.expected_delivery_date || '-' }}</p>
                                 <p><strong>Categoria:</strong> {{ retrievedData.category?.name || '-' }}</p>
-                                <p><strong>Dúzias:</strong> {{ retrievedData.quantity_dozens }}</p>
+                                <p><strong>Quantidade:</strong> {{ retrievedData.quantity_dozens }}</p>
                                 <p><strong>Preço Unitário:</strong> {{ retrievedData.unit_price || '-' }}</p>
                                 <p><strong>Total:</strong> {{ totalValue }}</p>
                                 <p><strong>Estado:</strong> {{ statusLabels[retrievedData.status] || retrievedData.status }}</p>

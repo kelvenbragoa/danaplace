@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\EggManagement;
 
 use App\Http\Controllers\Controller;
+use App\Models\EggModule\EggCustomer;
 use App\Models\EggModule\EggOrder;
 use Illuminate\Http\Request;
 
@@ -12,12 +13,16 @@ class EggOrderController extends Controller
     {
         $searchQuery = $request->query('query');
 
-        $query = EggOrder::with('category')
+        $query = EggOrder::with(['category', 'customer'])
             ->when($searchQuery, function ($q, $searchQuery) {
                 $q->where(function ($sub) use ($searchQuery) {
                     $sub->where('customer_name', 'like', "%{$searchQuery}%")
                         ->orWhere('customer_email', 'like', "%{$searchQuery}%")
-                        ->orWhere('customer_phone', 'like', "%{$searchQuery}%");
+                        ->orWhere('customer_phone', 'like', "%{$searchQuery}%")
+                        ->orWhereHas('customer', function ($customerQuery) use ($searchQuery) {
+                            $customerQuery->where('name', 'like', "%{$searchQuery}%")
+                                ->orWhere('portal_code', 'like', "%{$searchQuery}%");
+                        });
                 });
             });
 
@@ -33,22 +38,23 @@ class EggOrderController extends Controller
     public function pendingOrders()
     {
         $orders = EggOrder::whereIn('status', ['pending', 'approved', 'picked'])
-            ->with('category')
+            ->with(['category', 'customer'])
             ->orderBy('order_date', 'asc')
             ->get();
-        
+
         return response()->json($orders);
     }
 
     public function show(EggOrder $eggOrder)
     {
-        return response()->json($eggOrder->load('category', 'shipping'));
+        return response()->json($eggOrder->load('category', 'shipping', 'customer'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_name' => 'required|string|max:100',
+            'customer_id' => 'nullable|exists:egg_customers,id',
+            'customer_name' => 'required_without:customer_id|string|max:100',
             'customer_tax_id' => 'nullable|string|max:18',
             'customer_email' => 'nullable|email|max:100',
             'customer_phone' => 'nullable|string|max:20',
@@ -57,13 +63,21 @@ class EggOrderController extends Controller
             'category_id' => 'required|exists:egg_categories,id',
             'quantity_dozens' => 'required|integer|min:1',
             'unit_price' => 'nullable|numeric|min:0',
-            'observations' => 'nullable|string'
+            'observations' => 'nullable|string',
         ]);
+
+        if (!empty($validated['customer_id'])) {
+            $customer = EggCustomer::findOrFail($validated['customer_id']);
+            $validated['customer_name'] = $customer->name;
+            $validated['customer_tax_id'] = $customer->tax_id;
+            $validated['customer_email'] = $customer->email;
+            $validated['customer_phone'] = $customer->phone;
+        }
 
         $validated['status'] = 'pending';
         $order = EggOrder::create($validated);
-        
-        return response()->json($order->load('category'), 201);
+
+        return response()->json($order->load(['category', 'customer']), 201);
     }
 
     public function approve(EggOrder $eggOrder)
@@ -92,7 +106,7 @@ class EggOrderController extends Controller
             'expected_delivery_date' => 'nullable|date',
             'quantity_dozens' => 'integer|min:1',
             'unit_price' => 'nullable|numeric|min:0',
-            'observations' => 'nullable|string'
+            'observations' => 'nullable|string',
         ]);
 
         $eggOrder->update($validated);
@@ -110,9 +124,9 @@ class EggOrderController extends Controller
         $invoice = [
             'order' => $eggOrder->load('category'),
             'total_value' => $eggOrder->quantity_dozens * $eggOrder->unit_price,
-            'generated_at' => now()
+            'generated_at' => now(),
         ];
-        
+
         return response()->json($invoice);
     }
 }

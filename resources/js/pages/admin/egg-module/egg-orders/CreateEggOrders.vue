@@ -13,11 +13,15 @@ const loadingDiv = ref(true);
 const toastr = useToastr();
 const router = useRouter();
 const categories = ref([]);
+const customers = ref([]);
+const useManualCustomer = ref(false);
+const selectedCustomerId = ref('');
 
 const today = new Date().toISOString().split('T')[0];
 
 const schema = yup.object({
-    customer_name: yup.string().required(),
+    customer_id: yup.string().nullable(),
+    customer_name: yup.string().nullable().max(100),
     customer_tax_id: yup.string().nullable(),
     customer_email: yup.string().email().nullable(),
     customer_phone: yup.string().nullable(),
@@ -30,25 +34,55 @@ const schema = yup.object({
 });
 
 const getAuxiliarData = () => {
-    axios.get('/admin/egg-categories-all')
-        .then((response) => {
-            categories.value = response.data;
-            loadingDiv.value = false;
-        })
-        .catch(() => {
-            toastr.error('Erro ao carregar categorias');
-            router.push({ path: '/admin/pedidos' });
-        });
+    Promise.all([
+        axios.get('/admin/egg-categories-all'),
+        axios.get('/admin/egg-customers-all'),
+    ]).then(([categoriesResponse, customersResponse]) => {
+        categories.value = categoriesResponse.data;
+        customers.value = customersResponse.data;
+        loadingDiv.value = false;
+    }).catch(() => {
+        toastr.error('Erro ao carregar dados');
+        router.push({ path: '/admin/pedidos' });
+    });
+};
+
+const onCustomerChange = (customerId, setFieldValue) => {
+    selectedCustomerId.value = customerId;
+    if (!customerId) {
+        return;
+    }
+    const customer = customers.value.find((item) => String(item.id) === String(customerId));
+    if (customer) {
+        setFieldValue('customer_name', customer.name);
+        setFieldValue('customer_tax_id', customer.tax_id || '');
+        setFieldValue('customer_email', customer.email || '');
+        setFieldValue('customer_phone', customer.phone || '');
+    }
 };
 
 const createRecordFunction = (values, actions) => {
+    if (!useManualCustomer.value && !values.customer_id) {
+        actions.setErrors({ customer_id: 'Selecione um cliente' });
+        return;
+    }
+    if (useManualCustomer.value && !values.customer_name) {
+        actions.setErrors({ customer_name: 'Nome do cliente é obrigatório' });
+        return;
+    }
+
     loading.value = true;
 
     const payload = {
         ...values,
+        customer_id: useManualCustomer.value ? null : (values.customer_id || null),
         quantity_dozens: Number(values.quantity_dozens),
         unit_price: values.unit_price ? Number(values.unit_price) : null,
     };
+
+    if (useManualCustomer.value) {
+        delete payload.customer_id;
+    }
 
     axios.post('/admin/egg-orders', payload).then(() => {
         actions.resetForm();
@@ -85,16 +119,40 @@ onMounted(() => {
                     </div>
 
                     <div class="card-body">
-                        <Form @submit="createRecordFunction" :validation-schema="schema" v-slot="{ errors }" :initial-values="{ order_date: today, quantity_dozens: 1 }">
+                        <Form @submit="createRecordFunction" :validation-schema="schema" v-slot="{ errors, setFieldValue }" :initial-values="{ order_date: today, quantity_dozens: 1, customer_id: '' }">
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="mode_select" :value="false" v-model="useManualCustomer">
+                                    <label class="form-check-label" for="mode_select">Cliente registado</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="mode_manual" :value="true" v-model="useManualCustomer">
+                                    <label class="form-check-label" for="mode_manual">Preencher manualmente</label>
+                                </div>
+                            </div>
+
+                            <div v-if="!useManualCustomer" class="row">
+                                <div class="mb-3 col-md-12">
+                                    <label class="form-label" for="customer_id">Cliente</label>
+                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.customer_id}" name="customer_id" id="customer_id" @change="onCustomerChange($event.target.value, setFieldValue)">
+                                        <option value="">Selecione um cliente...</option>
+                                        <option v-for="customer in customers" :key="customer.id" :value="customer.id">
+                                            {{ customer.name }} — {{ customer.portal_code }}
+                                        </option>
+                                    </Field>
+                                    <span class="invalid-feedback">{{ errors.customer_name }}</span>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="mb-3 col-md-8">
                                     <label class="form-label" for="customer_name">Nome do Cliente</label>
-                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.customer_name}" name="customer_name" id="customer_name"/>
+                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.customer_name}" name="customer_name" id="customer_name" :disabled="!useManualCustomer && !!selectedCustomerId"/>
                                     <span class="invalid-feedback">{{ errors.customer_name }}</span>
                                 </div>
                                 <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="customer_tax_id">NIF</label>
-                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.customer_tax_id}" name="customer_tax_id" id="customer_tax_id"/>
+                                    <label class="form-label" for="customer_tax_id">NUIT</label>
+                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.customer_tax_id}" name="customer_tax_id" id="customer_tax_id" :disabled="!useManualCustomer && !!selectedCustomerId"/>
                                     <span class="invalid-feedback">{{ errors.customer_tax_id }}</span>
                                 </div>
                             </div>
@@ -102,12 +160,12 @@ onMounted(() => {
                             <div class="row">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="customer_email">Email</label>
-                                    <Field type="email" class="form-control" :class="{'is-invalid': errors.customer_email}" name="customer_email" id="customer_email"/>
+                                    <Field type="email" class="form-control" :class="{'is-invalid': errors.customer_email}" name="customer_email" id="customer_email" :disabled="!useManualCustomer && !!selectedCustomerId"/>
                                     <span class="invalid-feedback">{{ errors.customer_email }}</span>
                                 </div>
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="customer_phone">Telefone</label>
-                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.customer_phone}" name="customer_phone" id="customer_phone"/>
+                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.customer_phone}" name="customer_phone" id="customer_phone" :disabled="!useManualCustomer && !!selectedCustomerId"/>
                                     <span class="invalid-feedback">{{ errors.customer_phone }}</span>
                                 </div>
                             </div>
@@ -135,7 +193,7 @@ onMounted(() => {
 
                             <div class="row">
                                 <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="quantity_dozens">Quantidade (dúzias)</label>
+                                    <label class="form-label" for="quantity_dozens">Quantidade</label>
                                     <Field type="number" class="form-control" :class="{'is-invalid': errors.quantity_dozens}" name="quantity_dozens" id="quantity_dozens" min="1"/>
                                     <span class="invalid-feedback">{{ errors.quantity_dozens }}</span>
                                 </div>

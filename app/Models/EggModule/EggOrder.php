@@ -11,6 +11,7 @@ class EggOrder extends Model
     // protected $table = 'egg_orders';
     
     protected $fillable = [
+        'customer_id',
         'customer_name', 'customer_tax_id', 'customer_email', 'customer_phone',
         'order_date', 'expected_delivery_date', 'category_id', 'quantity_dozens',
         'unit_price', 'status', 'observations'
@@ -20,6 +21,11 @@ class EggOrder extends Model
         'order_date' => 'date',
         'expected_delivery_date' => 'date',
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(EggCustomer::class, 'customer_id');
+    }
 
     public function category()
     {

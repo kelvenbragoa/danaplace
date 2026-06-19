@@ -390,6 +390,14 @@ import CreateEggOrders from './pages/admin/egg-module/egg-orders/CreateEggOrders
 import ShowEggOrders from './pages/admin/egg-module/egg-orders/ShowEggOrders.vue';
 import EditEggOrders from './pages/admin/egg-module/egg-orders/EditEggOrders.vue';
 
+import IndexEggCustomers from './pages/admin/egg-module/egg-customers/IndexEggCustomers.vue';
+import CreateEggCustomers from './pages/admin/egg-module/egg-customers/CreateEggCustomers.vue';
+import ShowEggCustomers from './pages/admin/egg-module/egg-customers/ShowEggCustomers.vue';
+import EditEggCustomers from './pages/admin/egg-module/egg-customers/EditEggCustomers.vue';
+
+import PortalLogin from './pages/portal/egg/PortalLogin.vue';
+import PortalOrders from './pages/portal/egg/PortalOrders.vue';
+
 import IndexEggShipping from './pages/admin/egg-module/egg-shipping/IndexEggShipping.vue';
 import CreateEggShipping from './pages/admin/egg-module/egg-shipping/CreateEggShipping.vue';
 import ShowEggShipping from './pages/admin/egg-module/egg-shipping/ShowEggShipping.vue';
@@ -2303,6 +2311,40 @@ export default [
         path: '/admin/pedidos/:id/edit',
         name: 'admin.pedidos.edit',
         component: EditEggOrders,
+    },
+
+    //clientes de ovos (produção avícola)
+    {
+        path: '/admin/clientes-ovos',
+        name: 'admin.clientes-ovos.index',
+        component: IndexEggCustomers,
+    },
+    {
+        path: '/admin/clientes-ovos/create',
+        name: 'admin.clientes-ovos.create',
+        component: CreateEggCustomers,
+    },
+    {
+        path: '/admin/clientes-ovos/:id',
+        name: 'admin.clientes-ovos.show',
+        component: ShowEggCustomers,
+    },
+    {
+        path: '/admin/clientes-ovos/:id/edit',
+        name: 'admin.clientes-ovos.edit',
+        component: EditEggCustomers,
+    },
+
+    //portal de pedidos de ovos (clientes)
+    {
+        path: '/portal/pedidos-ovos',
+        name: 'portal.pedidos-ovos.login',
+        component: PortalLogin,
+    },
+    {
+        path: '/portal/pedidos-ovos/pedidos',
+        name: 'portal.pedidos-ovos.orders',
+        component: PortalOrders,
     },
 
     //expedição de ovos (produção avícola)
