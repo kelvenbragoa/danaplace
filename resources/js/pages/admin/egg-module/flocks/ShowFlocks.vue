@@ -97,13 +97,13 @@ onMounted(() => {
                                     <p><strong>Galpão:</strong> {{ retrievedData.house?.name || '-' }}</p>
                                     <p><strong>Granja:</strong> {{ retrievedData.house?.farm?.name || '-' }}</p>
                                     <p><strong>Linhagem:</strong> {{ retrievedData.lineage?.name || '-' }}</p>
-                                    <p><strong>Data de Nascimento:</strong> {{ retrievedData.birth_date }}</p>
+                                    <p><strong>Data de Nascimento:</strong> {{ moment(retrievedData.birth_date).format('DD-MM-YYYY') }}</p>
                                     <p><strong>Data de Alojamento:</strong> {{ moment(retrievedData.housing_date).format('DD-MM-YYYY') }}</p>
                                     <p><strong>Aves Iniciais:</strong> {{ retrievedData.initial_bird_count }}</p>
                                     <p><strong>Aves Atuais:</strong> {{ retrievedData.current_bird_count }}</p>
                                     <p><strong>Taxa de Mortalidade:</strong> {{ getMortalityRate() }}%</p>
                                     <p><strong>Data Prevista de Descarte:</strong> {{ moment(retrievedData.expected_disposal_date).format('DD-MM-YYYY') || '-' }}</p>
-                                    <p><strong>Data Real de Descarte:</strong> {{ moment(retrievedData.actual_disposal_date).format('DD-MM-YYYY') || '-' }}</p>
+                                    <p><strong>Data Real de Descarte:</strong> {{ retrievedData.actual_disposal_date ? moment(retrievedData.actual_disposal_date).format('DD-MM-YYYY') : '-' }}</p>
                                     <p>
                                         <strong>Estado:</strong>
                                         <span class="badge bg-info" v-if="retrievedData.status === 'growing'">{{ statusLabels.growing }}</span>
@@ -130,7 +130,7 @@ onMounted(() => {
                                             <tbody v-if="retrievedData.daily_production && retrievedData.daily_production.length > 0">
                                                 <tr v-for="(production, index) in retrievedData.daily_production" :key="production.id">
                                                     <td>#{{ index + 1 }}</td>
-                                                    <td>{{ production.date }}</td>
+                                                    <td>{{ moment(production.date).format('DD-MM-YYYY') }}</td>
                                                     <td>{{ production.total_eggs }}</td>
                                                     <td>{{ production.cracked_eggs }}</td>
                                                     <td>{{ production.feed_consumption_kg }}</td>
@@ -165,7 +165,7 @@ onMounted(() => {
                                             <tbody v-if="retrievedData.mortality && retrievedData.mortality.length > 0">
                                                 <tr v-for="(record, index) in retrievedData.mortality" :key="record.id">
                                                     <td>#{{ index + 1 }}</td>
-                                                    <td>{{ record.date }}</td>
+                                                    <td>{{ moment(record.date).format('DD-MM-YYYY') }}</td>
                                                     <td class="text-danger">{{ record.quantity }}</td>
                                                     <td>{{ record.probable_cause || '-' }}</td>
                                                     <td>
@@ -203,7 +203,7 @@ onMounted(() => {
                                             <tbody v-if="retrievedData.vaccination_schedule && retrievedData.vaccination_schedule.length > 0">
                                                 <tr v-for="(schedule, index) in retrievedData.vaccination_schedule" :key="schedule.id">
                                                     <td>#{{ index + 1 }}</td>
-                                                    <td>{{ schedule.scheduled_date }}</td>
+                                                    <td>{{ moment(schedule.scheduled_date).format('DD-MM-YYYY') }}</td>
                                                     <td>{{ schedule.vaccine?.name || '-' }}</td>
                                                     <td>{{ schedule.administration_route }}</td>
                                                     <td>{{ schedule.status }}</td>
