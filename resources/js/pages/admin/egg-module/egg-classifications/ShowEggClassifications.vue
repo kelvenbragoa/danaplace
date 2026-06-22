@@ -3,7 +3,8 @@
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import VueFeather from 'vue-feather';
+import VueFeather from 'vue-feather';   
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -46,7 +47,7 @@ onMounted(() => {
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Data:</strong> {{ retrievedData.processing_date }}</p>
+                                <p><strong>Data:</strong> {{ moment(retrievedData.processing_date).format('DD-MM-YYYY') }}</p>
                                 <p><strong>Lote:</strong> {{ retrievedData.flock?.code || '-' }}</p>
                                 <p><strong>Galpão:</strong> {{ retrievedData.flock?.house?.name || '-' }}</p>
                                 <p><strong>Granja:</strong> {{ retrievedData.flock?.house?.farm?.name || '-' }}</p>

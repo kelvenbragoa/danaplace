@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -97,8 +98,8 @@ onMounted(() => {
                             <div class="col-md-6">
                                 <h6>Dados do Estoque</h6>
                                 <p><strong>Quantidade:</strong> {{ retrievedData.quantity }}</p>
-                                <p><strong>Data de Entrada:</strong> {{ retrievedData.entry_date }}</p>
-                                <p><strong>Data de Saída:</strong> {{ retrievedData.exit_date || '-' }}</p>
+                                <p><strong>Data de Entrada:</strong> {{ moment(retrievedData.entry_date).format('DD-MM-YYYY') }}</p>
+                                <p><strong>Data de Saída:</strong> {{ moment(retrievedData.exit_date).format('DD-MM-YYYY') || '-' }}</p>
                                 <p><strong>Localização:</strong> {{ retrievedData.location || '-' }}</p>
                                 <p><strong>Estado:</strong> {{ statusLabels[retrievedData.status] || retrievedData.status }}</p>
                                 <p><strong>Galpão:</strong> {{ retrievedData.house?.name || '-' }}</p>
@@ -108,7 +109,7 @@ onMounted(() => {
                                 <h6>Dados do Ovo</h6>
                                 <p><strong>Rastreio:</strong> {{ retrievedData.egg?.traceability_code || '-' }}</p>
                                 <p><strong>Categoria:</strong> {{ retrievedData.egg?.category?.name || '-' }}</p>
-                                <p><strong>Data de Postura:</strong> {{ retrievedData.egg?.lay_date || '-' }}</p>
+                                <p><strong>Data de Postura:</strong> {{ moment(retrievedData.egg?.lay_date).format('DD-MM-YYYY') || '-' }}</p>
                                 <p><strong>Qualidade:</strong> {{ qualityLabels[retrievedData.egg?.quality] || retrievedData.egg?.quality || '-' }}</p>
                                 <p><strong>Lote:</strong> {{ retrievedData.egg?.flock?.code || '-' }}</p>
                             </div>

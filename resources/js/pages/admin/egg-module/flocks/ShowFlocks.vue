@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -97,12 +98,12 @@ onMounted(() => {
                                     <p><strong>Granja:</strong> {{ retrievedData.house?.farm?.name || '-' }}</p>
                                     <p><strong>Linhagem:</strong> {{ retrievedData.lineage?.name || '-' }}</p>
                                     <p><strong>Data de Nascimento:</strong> {{ retrievedData.birth_date }}</p>
-                                    <p><strong>Data de Alojamento:</strong> {{ retrievedData.housing_date }}</p>
+                                    <p><strong>Data de Alojamento:</strong> {{ moment(retrievedData.housing_date).format('DD-MM-YYYY') }}</p>
                                     <p><strong>Aves Iniciais:</strong> {{ retrievedData.initial_bird_count }}</p>
                                     <p><strong>Aves Atuais:</strong> {{ retrievedData.current_bird_count }}</p>
                                     <p><strong>Taxa de Mortalidade:</strong> {{ getMortalityRate() }}%</p>
-                                    <p><strong>Data Prevista de Descarte:</strong> {{ retrievedData.expected_disposal_date || '-' }}</p>
-                                    <p><strong>Data Real de Descarte:</strong> {{ retrievedData.actual_disposal_date || '-' }}</p>
+                                    <p><strong>Data Prevista de Descarte:</strong> {{ moment(retrievedData.expected_disposal_date).format('DD-MM-YYYY') || '-' }}</p>
+                                    <p><strong>Data Real de Descarte:</strong> {{ moment(retrievedData.actual_disposal_date).format('DD-MM-YYYY') || '-' }}</p>
                                     <p>
                                         <strong>Estado:</strong>
                                         <span class="badge bg-info" v-if="retrievedData.status === 'growing'">{{ statusLabels.growing }}</span>

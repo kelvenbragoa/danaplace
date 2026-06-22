@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -78,7 +79,7 @@ onMounted(() => {
                                 <p><strong>Embalagens Usadas:</strong> {{ retrievedData.quantity_used }}</p>
                                 <p><strong>Ovos Embalados:</strong> {{ retrievedData.packaged_eggs }}</p>
                                 <p><strong>Ovos Restantes:</strong> {{ retrievedData.remaining_eggs }}</p>
-                                <p><strong>Validade:</strong> {{ retrievedData.expiry_date }}</p>
+                                <p><strong>Validade:</strong> {{ moment(retrievedData.expiry_date).format('DD-MM-YYYY') }}</p>
                             </div>
                         </div>
 

@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -124,8 +125,8 @@ onMounted(() => {
                                 <p><strong>Fabricante:</strong> {{ retrievedData.vaccine?.manufacturer || '-' }}</p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Data Prevista:</strong> {{ retrievedData.scheduled_date }}</p>
-                                <p><strong>Data de Aplicação:</strong> {{ retrievedData.application_date || '-' }}</p>
+                                <p><strong>Data Prevista:</strong> {{ moment(retrievedData.scheduled_date).format('DD-MM-YYYY') }}</p>
+                                <p><strong>Data de Aplicação:</strong> {{ moment(retrievedData.application_date).format('DD-MM-YYYY') || '-' }}</p>
                                 <p><strong>Via:</strong> {{ routeLabels[retrievedData.administration_route] || retrievedData.administration_route }}</p>
                                 <p><strong>Dosagem:</strong> {{ retrievedData.dosage || '-' }}</p>
                                 <p><strong>Responsável:</strong> {{ retrievedData.responsible?.name || '-' }}</p>

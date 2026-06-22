@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -108,7 +109,7 @@ onMounted(() => {
                         <div class="row">
                             <div class="col-md-6">
                                 <h6>Transporte</h6>
-                                <p><strong>Data:</strong> {{ retrievedData.shipping_date }}</p>
+                                <p><strong>Data:</strong> {{ moment(retrievedData.shipping_date).format('DD-MM-YYYY') }}</p>
                                 <p><strong>Fatura:</strong> {{ retrievedData.invoice_number }}</p>
                                 <p><strong>Transportadora:</strong> {{ retrievedData.carrier }}</p>
                                 <p><strong>Motorista:</strong> {{ retrievedData.driver_name }}</p>

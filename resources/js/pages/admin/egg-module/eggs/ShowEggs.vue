@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -59,7 +60,7 @@ onMounted(() => {
                         <div class="row">
                             <div class="col-md-6">
                                 <p><strong>Código de Rastreio:</strong> {{ retrievedData.traceability_code }}</p>
-                                <p><strong>Data de Postura:</strong> {{ retrievedData.lay_date }}</p>
+                                <p><strong>Data de Postura:</strong> {{ moment(retrievedData.lay_date).format('DD-MM-YYYY') }}</p>
                                 <p><strong>Qualidade:</strong> {{ qualityLabels[retrievedData.quality] || retrievedData.quality }}</p>
                                 <p><strong>Destino:</strong> {{ destinationLabels[retrievedData.destination] || retrievedData.destination }}</p>
                                 <p><strong>Motivo Refugo:</strong> {{ retrievedData.reject_reason || '-' }}</p>
@@ -68,7 +69,7 @@ onMounted(() => {
                                 <p><strong>Lote:</strong> {{ retrievedData.flock?.code || '-' }}</p>
                                 <p><strong>Categoria:</strong> {{ retrievedData.category?.name || '-' }}</p>
                                 <p><strong>Classificação:</strong> {{ retrievedData.classification ? 'ID #' + retrievedData.classification.id : '-' }}</p>
-                                <p><strong>Data Classificação:</strong> {{ retrievedData.classification_date || '-' }}</p>
+                                <p><strong>Data Classificação:</strong> {{ moment(retrievedData.classification_date).format('DD-MM-YYYY') || '-' }}</p>
                                 <p><strong>Em Estoque:</strong> {{ retrievedData.inventory ? 'Sim (' + retrievedData.inventory.quantity + ')' : 'Não' }}</p>
                             </div>
                         </div>

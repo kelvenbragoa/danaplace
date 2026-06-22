@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -83,7 +84,7 @@ onMounted(() => {
                                                     <td>{{ flock.lineage?.name || '-' }}</td>
                                                     <td>{{ flock.initial_bird_count }}</td>
                                                     <td>{{ flock.current_bird_count }}</td>
-                                                    <td>{{ flock.housing_date }}</td>
+                                                    <td>{{ moment(flock.housing_date).format('DD-MM-YYYY') }}</td>
                                                     <td>{{ flock.status }}</td>
                                                     <td>
                                                         <router-link :to="'/admin/lotes/' + flock.id"><vue-feather type="eye"></vue-feather></router-link>

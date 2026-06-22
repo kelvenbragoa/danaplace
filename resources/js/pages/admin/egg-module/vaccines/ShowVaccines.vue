@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -49,7 +50,7 @@ onMounted(() => {
                         <p><strong>Nome:</strong> {{ retrievedData.name }}</p>
                         <p><strong>Fabricante:</strong> {{ retrievedData.manufacturer }}</p>
                         <p><strong>Lote:</strong> {{ retrievedData.batch }}</p>
-                        <p><strong>Data de Validade:</strong> {{ retrievedData.expiry_date }}</p>
+                        <p><strong>Data de Validade:</strong> {{ moment(retrievedData.expiry_date).format('DD-MM-YYYY') }}</p>
                         <p><strong>Stock Mínimo:</strong> {{ retrievedData.min_stock }}</p>
 
                         <hr>
@@ -70,7 +71,7 @@ onMounted(() => {
                                 <tbody v-if="retrievedData.vaccination_schedule && retrievedData.vaccination_schedule.length > 0">
                                     <tr v-for="(schedule, index) in retrievedData.vaccination_schedule" :key="schedule.id">
                                         <td>#{{ index + 1 }}</td>
-                                        <td>{{ schedule.scheduled_date }}</td>
+                                        <td>{{ moment(schedule.scheduled_date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ schedule.flock?.code || '-' }}</td>
                                         <td>{{ schedule.flock?.house?.name || '-' }}</td>
                                         <td>{{ statusLabels[schedule.status] || schedule.status }}</td>

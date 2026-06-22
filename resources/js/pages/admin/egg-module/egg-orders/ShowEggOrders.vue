@@ -5,6 +5,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -86,11 +87,11 @@ onMounted(() => {
                             </div>
                             <div class="col-md-6">
                                 <h6>Pedido</h6>
-                                <p><strong>Data:</strong> {{ retrievedData.order_date }}</p>
-                                <p><strong>Entrega Prevista:</strong> {{ retrievedData.expected_delivery_date || '-' }}</p>
+                                <p><strong>Data:</strong> {{ moment(retrievedData.order_date).format('DD-MM-YYYY') }}</p>
+                                <p><strong>Entrega Prevista:</strong> {{ moment(retrievedData.expected_delivery_date).format('DD-MM-YYYY') || '-' }}</p>
                                 <p><strong>Categoria:</strong> {{ retrievedData.category?.name || '-' }}</p>
                                 <p><strong>Quantidade:</strong> {{ retrievedData.quantity_dozens }}</p>
-                                <p><strong>Preço Unitário:</strong> {{ retrievedData.unit_price || '-' }}</p>
+                                <p><strong>Preço Unitário:</strong> {{ formatMoney(retrievedData.unit_price) || '-' }}</p>
                                 <p><strong>Total:</strong> {{ totalValue }}</p>
                                 <p><strong>Estado:</strong> {{ statusLabels[retrievedData.status] || retrievedData.status }}</p>
                             </div>

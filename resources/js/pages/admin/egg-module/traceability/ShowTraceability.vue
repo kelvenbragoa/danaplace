@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const loadingDiv = ref(true);
 const result = ref(null);
@@ -78,7 +79,7 @@ onMounted(() => {
                                 <div class="col-md-6">
                                     <h6>Ovo</h6>
                                     <p><strong>Código:</strong> {{ result.traceability_chain.egg?.code }}</p>
-                                    <p><strong>Postura:</strong> {{ result.traceability_chain.egg?.lay_date }}</p>
+                                    <p><strong>Postura:</strong> {{ moment(result.traceability_chain.egg?.lay_date).format('DD-MM-YYYY') }}</p>
                                     <p><strong>Qualidade:</strong> {{ qualityLabels[result.traceability_chain.egg?.quality] || result.traceability_chain.egg?.quality }}</p>
                                     <p><strong>Categoria:</strong> {{ result.traceability_chain.egg?.category || '-' }}</p>
                                     <p><strong>Destino:</strong> {{ destinationLabels[result.traceability_chain.egg?.destination] || result.traceability_chain.egg?.destination }}</p>
@@ -87,7 +88,7 @@ onMounted(() => {
                                     <h6>Origem</h6>
                                     <p><strong>Lote:</strong> {{ result.traceability_chain.flock?.code || '-' }}</p>
                                     <p><strong>Linhagem:</strong> {{ result.traceability_chain.flock?.lineage || '-' }}</p>
-                                    <p><strong>Alojamento:</strong> {{ result.traceability_chain.flock?.housing_date || '-' }}</p>
+                                    <p><strong>Alojamento:</strong> {{ moment(result.traceability_chain.flock?.housing_date).format('DD-MM-YYYY') || '-' }}</p>
                                     <p><strong>Galpão:</strong> {{ result.traceability_chain.house?.name || '-' }}</p>
                                     <p><strong>Granja:</strong> {{ result.traceability_chain.house?.farm || '-' }}</p>
                                 </div>
@@ -98,7 +99,7 @@ onMounted(() => {
                             <div class="row" v-if="result.traceability_chain.classification">
                                 <div class="col-md-6">
                                     <h6>Classificação</h6>
-                                    <p><strong>Data:</strong> {{ result.traceability_chain.classification.date }}</p>
+                                    <p><strong>Data:</strong> {{ moment(result.traceability_chain.classification.date).format('DD-MM-YYYY') }}</p>
                                     <p><strong>% Refugo:</strong> {{ result.traceability_chain.classification.reject_percentage }}%</p>
                                 </div>
                             </div>
@@ -120,11 +121,11 @@ onMounted(() => {
                                     <p><strong>QR Code:</strong> {{ result.traceability_chain.packaging?.qr_code }}</p>
                                     <p><strong>Tipo:</strong> {{ packageTypeLabels[result.traceability_chain.packaging?.type] || result.traceability_chain.packaging?.type }}</p>
                                     <p><strong>Ovos:</strong> {{ result.traceability_chain.packaging?.packaged_eggs }}</p>
-                                    <p><strong>Validade:</strong> {{ result.traceability_chain.packaging?.expiry_date }}</p>
+                                    <p><strong>Validade:</strong> {{ moment(result.traceability_chain.packaging?.expiry_date).format('DD-MM-YYYY') }}</p>
                                 </div>
                                 <div class="col-md-6">
                                     <h6>Classificação</h6>
-                                    <p><strong>Data:</strong> {{ result.traceability_chain.classification?.date }}</p>
+                                    <p><strong>Data:</strong> {{ moment(result.traceability_chain.classification?.date).format('DD-MM-YYYY') }}</p>
                                     <p><strong>Ovos lavados:</strong> {{ result.traceability_chain.classification?.washed_eggs }}</p>
                                     <p><strong>% Refugo:</strong> {{ result.traceability_chain.classification?.reject_percentage }}%</p>
                                 </div>

@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -90,11 +91,11 @@ onMounted(() => {
                     <div class="card-body">
                         <p><strong>Tipo:</strong> {{ typeLabels[retrievedData.type] || retrievedData.type }}</p>
                         <p><strong>Estado:</strong> {{ statusLabels[retrievedData.status] || retrievedData.status }}</p>
-                        <p><strong>Data:</strong> {{ retrievedData.alert_datetime }}</p>
+                        <p><strong>Data:</strong> {{ moment(retrievedData.alert_datetime).format('DD-MM-YYYY') }}</p>
                         <p><strong>Lote:</strong> {{ retrievedData.flock?.code || '-' }}</p>
                         <p><strong>Galpão:</strong> {{ retrievedData.flock?.house?.name || '-' }}</p>
-                        <p><strong>Lido em:</strong> {{ retrievedData.read_datetime || '-' }}</p>
-                        <p><strong>Resolvido em:</strong> {{ retrievedData.resolved_datetime || '-' }}</p>
+                        <p><strong>Lido em:</strong> {{ moment(retrievedData.read_datetime).format('DD-MM-YYYY') || '-' }}</p>
+                        <p><strong>Resolvido em:</strong> {{ moment(retrievedData.resolved_datetime).format('DD-MM-YYYY') || '-' }}</p>
                         <hr>
                         <p><strong>Mensagem:</strong></p>
                         <p>{{ retrievedData.message }}</p>
