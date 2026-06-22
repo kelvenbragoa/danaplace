@@ -1,7 +1,7 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -12,12 +12,14 @@ import VueFeather from 'vue-feather';
 import moment from 'moment';
 
 const router = useRouter();
-const loadingDiv = ref(true);
+const loadingEvents = ref(true);
 const loadingModal = ref(true);
 const shipping = ref({});
 const monthCount = ref(0);
 
 const loadEvents = (info, successCallback, failureCallback) => {
+    loadingEvents.value = true;
+
     axios.get('/admin/egg-shipping/calendar-events', {
         params: {
             start: info.startStr,
@@ -26,12 +28,12 @@ const loadEvents = (info, successCallback, failureCallback) => {
     }).then((response) => {
         monthCount.value = response.data.length;
         successCallback(response.data);
-        loadingDiv.value = false;
     }).catch(() => {
         if (failureCallback) {
             failureCallback();
         }
-        loadingDiv.value = false;
+    }).finally(() => {
+        loadingEvents.value = false;
     });
 };
 
@@ -72,14 +74,10 @@ const goToDetail = () => {
     }
 };
 
-onMounted(() => {
-    // events carregados pelo FullCalendar via loadEvents
-});
-
 </script>
 
 <template>
-    <div v-if="!loadingDiv">
+    <div>
         <h1 class="h3 mb-3">Calendário de Expedições</h1>
 
         <div class="row mb-3">
@@ -111,20 +109,12 @@ onMounted(() => {
                     <vue-feather type="plus"></vue-feather>Nova expedição
                 </router-link>
             </div>
-            <div class="card-body">
-                <FullCalendar :options="calendarOptions" />
-            </div>
-        </div>
-    </div>
-
-    <div v-else>
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-center">
+            <div class="card-body position-relative">
+                <div v-if="loadingEvents" class="text-center py-4">
                     <div class="spinner-border" role="status"><span class="sr-only"></span></div>
+                    <p class="mt-2 mb-0 text-muted">Carregando expedições...</p>
                 </div>
-                <br>
-                <div class="d-flex justify-content-center">Carregando calendário...</div>
+                <FullCalendar :options="calendarOptions" />
             </div>
         </div>
     </div>
