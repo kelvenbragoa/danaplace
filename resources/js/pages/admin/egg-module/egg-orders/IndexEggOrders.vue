@@ -6,6 +6,7 @@ import { useToastr } from '../../../../toastr';
 import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const toastr = useToastr();
 const searchQuery = ref(null);
@@ -155,7 +156,7 @@ onMounted(() => {
                                     <tr v-for="(actualData, index) in retriviedData.data" :key="actualData.id">
                                         <td>#{{ index + 1 }}</td>
                                         <td>{{ actualData.customer_name }}</td>
-                                        <td>{{ actualData.order_date }}</td>
+                                        <td>{{ moment(actualData.order_date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ actualData.category?.name || '-' }}</td>
                                         <td>{{ actualData.quantity_dozens }}</td>
                                         <td>{{ formatTotal(actualData) }}</td>

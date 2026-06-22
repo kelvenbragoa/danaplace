@@ -6,6 +6,7 @@ import { useToastr } from '../../../../toastr';
 import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const toastr = useToastr();
 const searchQuery = ref(null);
@@ -141,6 +142,9 @@ onMounted(() => {
                                         <th>Aves Atuais</th>
                                         <th>Mortalidade</th>
                                         <th>Alojamento</th>
+                                        <th>Consumo de Ração Diário</th>
+                                        <th>Consumo de Água Diário</th>
+                                        <th>Horas de Luz Diárias</th>
                                         <th>Estado</th>
                                         <th>Ações</th>
                                     </tr>
@@ -155,7 +159,10 @@ onMounted(() => {
                                         <td>{{ actualData.initial_bird_count }}</td>
                                         <td>{{ actualData.current_bird_count }}</td>
                                         <td>{{ getMortalityRate(actualData) }}%</td>
-                                        <td>{{ actualData.housing_date }}</td>
+                                        <td>{{ moment(actualData.housing_date).format('DD-MM-YYYY') }}</td>
+                                        <td>{{ actualData.daily_feed_consumption_kg }} kg</td>
+                                        <td>{{ actualData.daily_water_consumption_liters }} L</td>
+                                        <td>{{ actualData.daily_light_hours }} h</td>
                                         <td>
                                             <span class="badge bg-info" v-if="actualData.status === 'growing'">{{ statusLabels.growing }}</span>
                                             <span class="badge bg-success" v-else-if="actualData.status === 'laying'">{{ statusLabels.laying }}</span>

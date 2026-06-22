@@ -6,7 +6,7 @@ import { useToastr } from '../../../../toastr';
 import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 import VueFeather from 'vue-feather';
-
+import moment from 'moment';
 const toastr = useToastr();
 const searchQuery = ref(null);
 const todayCount = ref(0);
@@ -118,7 +118,7 @@ onMounted(() => {
                                         <td>#{{ index + 1 }}</td>
                                         <td>{{ actualData.invoice_number }}</td>
                                         <td>{{ actualData.order?.customer_name || '-' }}</td>
-                                        <td>{{ actualData.shipping_date }}</td>
+                                        <td>{{ moment(actualData.shipping_date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ actualData.carrier }}</td>
                                         <td>{{ actualData.driver_name }}</td>
                                         <td>{{ actualData.vehicle_plate }}</td>

@@ -16,7 +16,7 @@ class Flock extends Model
     protected $fillable = [
         'house_id', 'lineage_id', 'code', 'birth_date', 'housing_date',
         'initial_bird_count', 'current_bird_count', 'expected_disposal_date', 
-        'actual_disposal_date', 'status', 'observations'
+        'actual_disposal_date', 'status', 'observations', 'daily_feed_consumption_kg', 'daily_water_consumption_liters', 'daily_light_hours'
     ];
 
     protected $casts = [

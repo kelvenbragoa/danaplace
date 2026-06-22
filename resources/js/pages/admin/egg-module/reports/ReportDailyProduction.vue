@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useToastr } from '../../../../toastr';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
+import moment from 'moment';
 
 const toastr = useToastr();
 const loadingDiv = ref(true);
@@ -92,7 +93,7 @@ onMounted(() => {
                     <thead><tr><th>Data</th><th>Total</th><th>Rachados</th><th>Sujos</th><th>Deformados</th></tr></thead>
                     <tbody>
                         <tr v-for="row in report.by_date" :key="row.date">
-                            <td>{{ row.date }}</td><td>{{ row.total_eggs }}</td><td>{{ row.cracked_eggs }}</td><td>{{ row.dirty_eggs }}</td><td>{{ row.deformed_eggs }}</td>
+                            <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td><td>{{ row.total_eggs }}</td><td>{{ row.cracked_eggs }}</td><td>{{ row.dirty_eggs }}</td><td>{{ row.deformed_eggs }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -106,7 +107,7 @@ onMounted(() => {
                     <thead><tr><th>Data</th><th>Lote</th><th>Total</th><th>Limpos</th><th>Ração (kg)</th></tr></thead>
                     <tbody>
                         <tr v-for="row in report.details.data" :key="row.id">
-                            <td>{{ row.date }}</td><td>{{ row.flock?.code }}</td><td>{{ row.total_eggs }}</td><td>{{ row.clean_eggs }}</td><td>{{ row.feed_consumption_kg }}</td>
+                            <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td><td>{{ row.flock?.code }}</td><td>{{ row.total_eggs }}</td><td>{{ row.clean_eggs }}</td><td>{{ row.feed_consumption_kg }}</td>
                         </tr>
                     </tbody>
                 </table>

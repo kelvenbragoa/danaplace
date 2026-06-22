@@ -6,6 +6,7 @@ import { useToastr } from '../../../../toastr';
 import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const toastr = useToastr();
 const searchQuery = ref(null);
@@ -107,7 +108,7 @@ onMounted(() => {
                                         <td>{{ actualData.packaged_eggs }}</td>
                                         <td>
                                             <span :class="{'text-danger': isExpired(actualData.expiry_date)}">
-                                                {{ actualData.expiry_date }}
+                                                {{ moment(actualData.expiry_date).format('DD-MM-YYYY') }}
                                             </span>
                                         </td>
                                         <td><small>{{ actualData.qr_code }}</small></td>

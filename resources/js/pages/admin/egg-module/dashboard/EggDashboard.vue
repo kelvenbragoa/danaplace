@@ -3,6 +3,7 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import VueFeather from 'vue-feather';
+import moment from 'moment'
 
 const loadingDiv = ref(true);
 const dashboard = ref({});
@@ -102,6 +103,7 @@ onMounted(() => {
                     <div class="card-body py-3">
                         <h6 class="text-warning mb-1">Pedidos Pendentes</h6>
                         <h3 class="mb-0">{{ dashboard.summary?.pending_orders || 0 }}</h3>
+                        <small class="text-muted">de {{ dashboard.summary?.total_eggs_pending_orders || 0 }} total</small>
                     </div>
                 </div>
             </div>
@@ -207,7 +209,7 @@ onMounted(() => {
                                 <thead>
                                     <tr>
                                         <th>Cliente</th>
-                                        <th>Dúzias</th>
+                                        <th>Quantidade</th>
                                         <th>Estado</th>
                                     </tr>
                                 </thead>
@@ -263,7 +265,7 @@ onMounted(() => {
                                 </thead>
                                 <tbody v-if="productionStats.length">
                                     <tr v-for="row in productionStats" :key="row.date">
-                                        <td>{{ row.date }}</td>
+                                        <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ row.total_eggs }}</td>
                                         <td>{{ row.cracked_eggs }}</td>
                                         <td>{{ row.dirty_eggs }}</td>
@@ -292,7 +294,7 @@ onMounted(() => {
                                 </thead>
                                 <tbody v-if="mortalityStats.length">
                                     <tr v-for="row in mortalityStats" :key="row.date">
-                                        <td>{{ row.date }}</td>
+                                        <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ row.total_mortality }}</td>
                                     </tr>
                                 </tbody>

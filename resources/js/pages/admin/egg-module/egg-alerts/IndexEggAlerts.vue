@@ -5,7 +5,8 @@ import axios from 'axios';
 import { useToastr } from '../../../../toastr';
 import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
-import VueFeather from 'vue-feather';
+import VueFeather from 'vue-feather';   
+import moment from 'moment';
 
 const toastr = useToastr();
 const searchQuery = ref(null);
@@ -196,7 +197,7 @@ onMounted(() => {
                                         <td>{{ typeLabels[actualData.type] || actualData.type }}</td>
                                         <td>{{ actualData.title }}</td>
                                         <td>{{ actualData.flock?.code || '-' }}</td>
-                                        <td>{{ actualData.alert_datetime }}</td>
+                                        <td>{{ moment(actualData.alert_datetime).format('DD-MM-YYYY') }}</td>
                                         <td>
                                             <span class="badge" :class="statusBadgeClass[actualData.status] || 'badge-light'">
                                                 {{ statusLabels[actualData.status] || actualData.status }}

@@ -2,6 +2,7 @@
 
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
+import moment from 'moment';
 
 const loadingDiv = ref(true);
 const flocks = ref([]);
@@ -93,7 +94,7 @@ onMounted(() => {
                     <div class="col-md-3"><p><strong>Outros:</strong> {{ data.breakdown.other_costs }}</p></div>
                 </div>
                 <p class="text-muted small mb-0" v-if="data.start_date">
-                    Período: {{ data.start_date }} — {{ data.end_date }}
+                    Período: {{ moment(data.start_date).format('DD-MM-YYYY') }} — {{ moment(data.end_date).format('DD-MM-YYYY') }}
                 </p>
             </div>
         </div>

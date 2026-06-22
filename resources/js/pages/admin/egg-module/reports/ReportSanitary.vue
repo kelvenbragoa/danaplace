@@ -2,7 +2,8 @@
 
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { useToastr } from '../../../../toastr';
+import { useToastr } from '../../../../toastr'; 
+import moment from 'moment';
 
 const toastr = useToastr();
 const loadingDiv = ref(true);
@@ -67,7 +68,7 @@ onMounted(() => {
                             <thead><tr><th>Data</th><th>Lote</th><th>Vacina</th><th>Estado</th></tr></thead>
                             <tbody>
                                 <tr v-for="row in report.vaccinations.data" :key="row.id">
-                                    <td>{{ row.scheduled_date }}</td>
+                                    <td>{{ moment(row.scheduled_date).format('DD-MM-YYYY') }}</td>
                                     <td>{{ row.flock?.code }}</td>
                                     <td>{{ row.vaccine?.name }}</td>
                                     <td>{{ scheduleStatus[row.status] || row.status }}</td>
@@ -85,7 +86,7 @@ onMounted(() => {
                             <thead><tr><th>Data</th><th>Lote</th><th>Qtd</th><th>Causa</th></tr></thead>
                             <tbody>
                                 <tr v-for="row in report.mortality.data" :key="row.id">
-                                    <td>{{ row.date }}</td>
+                                    <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                     <td>{{ row.flock?.code }}</td>
                                     <td>{{ row.quantity }}</td>
                                     <td>{{ row.probable_cause || '-' }}</td>

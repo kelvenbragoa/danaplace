@@ -3,7 +3,8 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useToastr } from '../../../../toastr';
-import { Bootstrap4Pagination } from 'laravel-vue-pagination';
+import { Bootstrap4Pagination } from 'laravel-vue-pagination';  
+import moment from 'moment';
 
 const toastr = useToastr();
 const loadingDiv = ref(true);
@@ -75,7 +76,7 @@ onMounted(() => loadData());
                             <td>{{ row.house?.name }}</td>
                             <td>{{ row.quantity }}</td>
                             <td>{{ statusLabels[row.status] || row.status }}</td>
-                            <td>{{ row.entry_date }}</td>
+                            <td>{{ moment(row.entry_date).format('DD-MM-YYYY') }}</td>
                         </tr>
                     </tbody>
                 </table>

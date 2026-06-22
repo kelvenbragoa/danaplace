@@ -2,6 +2,7 @@
 
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
+import moment from 'moment';
 
 const loadingDiv = ref(true);
 const flocks = ref([]);
@@ -93,7 +94,7 @@ onMounted(() => {
                         </thead>
                         <tbody v-if="summary.data?.length">
                             <tr v-for="row in summary.data" :key="row.date + row.flock_code">
-                                <td>{{ row.date }}</td>
+                                <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                 <td>{{ row.flock_code }}</td>
                                 <td>{{ row.feed_consumption_kg }}</td>
                                 <td>{{ row.total_eggs }}</td>

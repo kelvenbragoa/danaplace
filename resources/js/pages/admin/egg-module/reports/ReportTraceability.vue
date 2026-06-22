@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useToastr } from '../../../../toastr';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
+import moment from 'moment';
 
 const toastr = useToastr();
 const loadingDiv = ref(true);
@@ -84,7 +85,7 @@ onMounted(() => {
                         <tr v-for="row in report.details.data" :key="row.id">
                             <td>{{ row.traceability_code }}</td>
                             <td>{{ row.flock?.code }}</td>
-                            <td>{{ row.lay_date }}</td>
+                            <td>{{ moment(row.lay_date).format('DD-MM-YYYY') }}</td>
                             <td>{{ row.flock?.house?.farm?.name || '-' }}</td>
                             <td>{{ qualityLabels[row.quality] || row.quality }}</td>
                             <td>{{ destinationLabels[row.destination] || row.destination }}</td>

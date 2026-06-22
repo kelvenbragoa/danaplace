@@ -63,7 +63,10 @@ class FlockController extends Controller
             'current_bird_count' => 'required|integer|min:0',
             'expected_disposal_date' => 'nullable|date',
             'status' => 'in:growing,laying,disposed',
-            'observations' => 'nullable|string'
+            'observations' => 'nullable|string',
+            'daily_feed_consumption_kg' => 'nullable|numeric|min:0',
+            'daily_water_consumption_liters' => 'nullable|numeric|min:0',
+            'daily_light_hours' => 'nullable|numeric|min:0'
         ]);
 
         $flock = Flock::create($validated);
@@ -83,7 +86,10 @@ class FlockController extends Controller
             'expected_disposal_date' => 'nullable|date',
             'actual_disposal_date' => 'nullable|date',
             'status' => 'in:growing,laying,disposed',
-            'observations' => 'nullable|string'
+            'observations' => 'nullable|string',
+            'daily_feed_consumption_kg' => 'nullable|numeric|min:0',
+            'daily_water_consumption_liters' => 'nullable|numeric|min:0',
+            'daily_light_hours' => 'nullable|numeric|min:0'
         ]);
 
         $flock->update($validated);

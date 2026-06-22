@@ -3,6 +3,7 @@
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useToastr } from '../../../../toastr';
+import moment from 'moment';
 
 const toastr = useToastr();
 const loadingDiv = ref(true);
@@ -64,7 +65,7 @@ onMounted(() => {
                     <thead><tr><th>Data</th><th>Refugos</th><th>Processados</th><th>% Médio</th></tr></thead>
                     <tbody>
                         <tr v-for="row in report.by_classification_date" :key="row.date">
-                            <td>{{ row.date }}</td><td>{{ row.total_rejects }}</td><td>{{ row.total_processed }}</td><td>{{ row.avg_reject_percentage?.toFixed?.(1) ?? row.avg_reject_percentage }}%</td>
+                            <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td><td>{{ row.total_rejects }}</td><td>{{ row.total_processed }}</td><td>{{ row.avg_reject_percentage?.toFixed?.(1) ?? row.avg_reject_percentage }}%</td>
                         </tr>
                     </tbody>
                 </table>
@@ -78,7 +79,7 @@ onMounted(() => {
                     <thead><tr><th>Rastreio</th><th>Lote</th><th>Postura</th><th>Motivo</th></tr></thead>
                     <tbody>
                         <tr v-for="egg in report.reject_eggs" :key="egg.id">
-                            <td>{{ egg.traceability_code }}</td><td>{{ egg.flock?.code }}</td><td>{{ egg.lay_date }}</td><td>{{ egg.reject_reason || '-' }}</td>
+                            <td>{{ egg.traceability_code }}</td><td>{{ egg.flock?.code }}</td><td>{{ moment(egg.lay_date).format('DD-MM-YYYY') }}</td><td>{{ egg.reject_reason || '-' }}</td>
                         </tr>
                     </tbody>
                 </table>

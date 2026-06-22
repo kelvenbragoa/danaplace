@@ -168,7 +168,8 @@ class EggDashboardController extends Controller
             'total_eggs_today' => DailyProduction::where('date', Carbon::today())->sum('total_eggs'),
             'total_mortality_today' => Mortality::where('date', Carbon::today())->sum('quantity'),
             'available_inventory' => EggInventory::where('status', 'available')->sum('quantity'),
-            'pending_orders' => EggOrder::where('status', 'pending')->count()
+            'pending_orders' => EggOrder::where('status', 'pending')->count(),
+            'total_eggs_pending_orders' => EggOrder::where('status', 'pending')->sum('quantity_dozens')
         ];
     }
 

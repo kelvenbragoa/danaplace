@@ -7,6 +7,7 @@ import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 import VueFeather from 'vue-feather';
 import { useRouter } from 'vue-router';
+import moment from 'moment';
 
 const toastr = useToastr();
 const router = useRouter();
@@ -237,7 +238,7 @@ onMounted(() => {
                                         <td>#{{ index + 1 }}</td>
                                         <td>{{ item.traceability_code }}</td>
                                         <td>{{ item.flock?.code || '-' }}</td>
-                                        <td>{{ item.lay_date }}</td>
+                                        <td>{{ moment(item.lay_date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ item.flock?.house?.farm?.name || '-' }}</td>
                                         <td>{{ qualityLabels[item.quality] || item.quality }}</td>
                                         <td>{{ destinationLabels[item.destination] || item.destination }}</td>

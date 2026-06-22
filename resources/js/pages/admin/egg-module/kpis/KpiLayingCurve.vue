@@ -3,7 +3,7 @@
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { useToastr } from '../../../../toastr';
-
+import moment from 'moment';
 const toastr = useToastr();
 const loadingDiv = ref(true);
 const flocks = ref([]);
@@ -83,7 +83,7 @@ onMounted(() => {
                                     <thead><tr><th>Data</th><th>Ovos</th></tr></thead>
                                     <tbody>
                                         <tr v-for="row in data.actual" :key="row.date">
-                                            <td>{{ row.date }}</td>
+                                            <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                             <td>{{ row.total_eggs }}</td>
                                         </tr>
                                     </tbody>
@@ -101,7 +101,7 @@ onMounted(() => {
                                     <thead><tr><th>Data</th><th>Ovos esp.</th></tr></thead>
                                     <tbody>
                                         <tr v-for="row in data.expected" :key="row.date">
-                                            <td>{{ row.date }}</td>
+                                            <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                             <td>{{ row.expected_eggs }}</td>
                                         </tr>
                                     </tbody>
@@ -119,7 +119,7 @@ onMounted(() => {
                                     <thead><tr><th>Data</th><th>Real</th><th>Esp.</th><th>%</th></tr></thead>
                                     <tbody>
                                         <tr v-for="row in data.deviation" :key="row.date">
-                                            <td>{{ row.date }}</td>
+                                            <td>{{ moment(row.date).format('DD-MM-YYYY') }}</td>
                                             <td>{{ row.actual }}</td>
                                             <td>{{ row.expected }}</td>
                                             <td :class="{'text-danger': row.percentage < 0, 'text-success': row.percentage > 0}">

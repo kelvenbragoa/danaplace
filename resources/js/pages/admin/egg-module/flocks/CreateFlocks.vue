@@ -26,6 +26,9 @@ const schema = yup.object({
     expected_disposal_date: yup.string().nullable(),
     status: yup.string().oneOf(['growing', 'laying', 'disposed']).required(),
     observations: yup.string().nullable(),
+    daily_feed_consumption_kg: yup.number().nullable(),
+    daily_water_consumption_liters: yup.number().nullable(),
+    daily_light_hours: yup.number().nullable(),
 });
 
 const getAuxiliarData = () => {
@@ -49,6 +52,9 @@ const createRecordFunction = (values, actions) => {
         ...values,
         initial_bird_count: Number(values.initial_bird_count),
         current_bird_count: Number(values.current_bird_count ?? values.initial_bird_count),
+        daily_feed_consumption_kg: Number(values.daily_feed_consumption_kg ?? 0),
+        daily_water_consumption_liters: Number(values.daily_water_consumption_liters ?? 0),
+        daily_light_hours: Number(values.daily_light_hours ?? 0),
     };
 
     axios.post('/admin/flocks', payload).then(() => {
@@ -167,6 +173,27 @@ onMounted(() => {
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="daily_feed_consumption_kg">Consumo de Ração Diário</label>
+                                    <Field type="number" class="form-control" :class="{'is-invalid': errors.daily_feed_consumption_kg}" name="daily_feed_consumption_kg" id="daily_feed_consumption_kg" min="0" placeholder="0"/>
+                                    <span class="invalid-feedback">{{ errors.daily_feed_consumption_kg }}</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="daily_water_consumption_liters">Consumo de Água Diário</label>
+                                    <Field type="number" class="form-control" :class="{'is-invalid': errors.daily_water_consumption_liters}" name="daily_water_consumption_liters" id="daily_water_consumption_liters" min="0" placeholder="0"/>
+                                    <span class="invalid-feedback">{{ errors.daily_water_consumption_liters }}</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="daily_light_hours">Horas de Luz Diárias</label>
+                                    <Field type="number" class="form-control" :class="{'is-invalid': errors.daily_light_hours}" name="daily_light_hours" id="daily_light_hours" min="0" placeholder="0"/>
+                                    <span class="invalid-feedback">{{ errors.daily_light_hours }}</span>
+                                </div>
+                            </div>
                             <button type="submit" class="btn btn-primary" :disabled="loading">
                                 <div v-if="loading" class="spinner-border spinner-border-sm" role="status"></div>
                                 <span v-else>Submeter</span>

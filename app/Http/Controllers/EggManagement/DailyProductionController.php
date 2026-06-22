@@ -127,9 +127,9 @@ class DailyProductionController extends Controller
             'date' => [
                 'required',
                 'date',
-                Rule::unique('daily_productions')
-                    ->where(fn ($query) => $query->where('flock_id', $request->flock_id))
-                    ->ignore($ignoreId),
+                // Rule::unique('daily_productions')
+                //     ->where(fn ($query) => $query->where('flock_id', $request->flock_id))
+                //     ->ignore($ignoreId),
             ],
             'total_eggs' => 'required|integer|min:0',
             'cracked_eggs' => 'integer|min:0',
