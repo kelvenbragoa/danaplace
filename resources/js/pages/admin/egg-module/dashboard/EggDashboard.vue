@@ -103,7 +103,7 @@ onMounted(() => {
                     <div class="card-body py-3">
                         <h6 class="text-warning mb-1">Pedidos Pendentes</h6>
                         <h3 class="mb-0">{{ dashboard.summary?.pending_orders || 0 }}</h3>
-                        <small class="text-muted">de {{ dashboard.summary?.total_eggs_pending_orders || 0 }} total</small>
+                        <small class="text-muted">de {{ dashboard.summary?.total_eggs_pending_orders || 0 }}  de ovos</small>
                     </div>
                 </div>
             </div>
