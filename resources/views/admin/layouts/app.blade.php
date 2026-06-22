@@ -237,6 +237,7 @@
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/clientes-ovos">Clientes</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/pedidos">Pedidos</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/expedicao-ovos">Expedição</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/expedicao-ovos/calendario">Calendário Expedição</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/rastreabilidade">Rastreabilidade</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/dashboard-ovos">Dashboard Ovos</router-link></li>
 						</ul>

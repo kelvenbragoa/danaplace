@@ -89,6 +89,10 @@ onMounted(() => {
                             <vue-feather type="plus"></vue-feather>Adicionar
                         </router-link>
 
+                        <router-link to="/admin/expedicao-ovos/calendario" class="btn btn-pill btn-info mt-3 ms-2">
+                            <vue-feather type="calendar"></vue-feather>Calendário
+                        </router-link>
+
                         <br>
 
                         <form class="d-none d-sm-inline-block mt-3">

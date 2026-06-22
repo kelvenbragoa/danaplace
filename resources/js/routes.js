@@ -399,6 +399,7 @@ import PortalLogin from './pages/portal/egg/PortalLogin.vue';
 import PortalOrders from './pages/portal/egg/PortalOrders.vue';
 
 import IndexEggShipping from './pages/admin/egg-module/egg-shipping/IndexEggShipping.vue';
+import CalendarEggShipping from './pages/admin/egg-module/egg-shipping/CalendarEggShipping.vue';
 import CreateEggShipping from './pages/admin/egg-module/egg-shipping/CreateEggShipping.vue';
 import ShowEggShipping from './pages/admin/egg-module/egg-shipping/ShowEggShipping.vue';
 import EditEggShipping from './pages/admin/egg-module/egg-shipping/EditEggShipping.vue';
@@ -2352,6 +2353,11 @@ export default [
         path: '/admin/expedicao-ovos',
         name: 'admin.expedicao-ovos.index',
         component: IndexEggShipping,
+    },
+    {
+        path: '/admin/expedicao-ovos/calendario',
+        name: 'admin.expedicao-ovos.calendar',
+        component: CalendarEggShipping,
     },
     {
         path: '/admin/expedicao-ovos/create',

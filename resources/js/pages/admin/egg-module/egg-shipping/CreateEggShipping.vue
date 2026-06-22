@@ -118,7 +118,7 @@ onMounted(() => {
                                     <span class="invalid-feedback">{{ errors.order_id }}</span>
                                 </div>
                                 <div class="mb-3 col-md-6">
-                                    <label class="form-label" for="inventory_id">Estoque (FIFO)</label>
+                                    <label class="form-label" for="inventory_id">Estoque</label>
                                     <Field as="select" class="form-control" :class="{'is-invalid': errors.inventory_id}" name="inventory_id" id="inventory_id">
                                         <option value="">Selecione...</option>
                                         <option v-for="item in inventory" :key="item.id" :value="item.id">{{ inventoryLabel(item) }}</option>
@@ -165,7 +165,7 @@ onMounted(() => {
 
                             <div class="row">
                                 <div class="mb-3 col-md-6">
-                                    <label class="form-label" for="seal_number">Nº Lacre</label>
+                                    <label class="form-label" for="seal_number">Nº Selo</label>
                                     <Field type="text" class="form-control" :class="{'is-invalid': errors.seal_number}" name="seal_number" id="seal_number"/>
                                     <span class="invalid-feedback">{{ errors.seal_number }}</span>
                                 </div>

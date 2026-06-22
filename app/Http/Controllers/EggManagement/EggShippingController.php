@@ -50,6 +50,50 @@ class EggShippingController extends Controller
         return response()->json($shippings);
     }
 
+    public function calendarEvents(Request $request)
+    {
+        $request->validate([
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $query = EggShipping::with('order.category')
+            ->orderBy('shipping_date');
+
+        if ($request->filled('start') && $request->filled('end')) {
+            $query->whereBetween('shipping_date', [
+                Carbon::parse($request->start)->startOfDay(),
+                Carbon::parse($request->end)->endOfDay(),
+            ]);
+        }
+
+        $events = $query->get()->map(function (EggShipping $shipping) {
+            $customer = $shipping->order?->customer_name ?? 'Cliente';
+            $category = $shipping->order?->category?->name ?? '';
+            $isToday = $shipping->shipping_date?->isToday();
+
+            return [
+                'id' => $shipping->id,
+                'title' => $customer . ' — ' . $shipping->invoice_number,
+                'start' => $shipping->shipping_date->format('Y-m-d'),
+                'backgroundColor' => $isToday ? '#1cbb8c' : '#3b7ddd',
+                'borderColor' => $isToday ? '#1cbb8c' : '#3b7ddd',
+                'extendedProps' => [
+                    'customer' => $customer,
+                    'invoice' => $shipping->invoice_number,
+                    'carrier' => $shipping->carrier,
+                    'driver' => $shipping->driver_name,
+                    'plate' => $shipping->vehicle_plate,
+                    'category' => $category,
+                    'quantity' => $shipping->order?->quantity_dozens,
+                    'shipping_date' => $shipping->shipping_date->format('Y-m-d'),
+                ],
+            ];
+        });
+
+        return response()->json($events);
+    }
+
     public function show(EggShipping $eggShipping)
     {
         return response()->json($eggShipping->load(

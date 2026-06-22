@@ -91,7 +91,7 @@ onMounted(() => {
                                 <p><strong>Entrega Prevista:</strong> {{ moment(retrievedData.expected_delivery_date).format('DD-MM-YYYY') || '-' }}</p>
                                 <p><strong>Categoria:</strong> {{ retrievedData.category?.name || '-' }}</p>
                                 <p><strong>Quantidade:</strong> {{ retrievedData.quantity_dozens }}</p>
-                                <p><strong>Preço Unitário:</strong> {{ formatMoney(retrievedData.unit_price) || '-' }}</p>
+                                <p><strong>Preço Unitário:</strong> {{retrievedData.unit_price }}</p>
                                 <p><strong>Total:</strong> {{ totalValue }}</p>
                                 <p><strong>Estado:</strong> {{ statusLabels[retrievedData.status] || retrievedData.status }}</p>
                             </div>

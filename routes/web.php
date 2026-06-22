@@ -556,6 +556,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         // 16. Egg Shipping / Expedition
         // ============================================
         Route::get('egg-shipping/today-shipping', [EggShippingController::class, 'todayShipping'])->name('egg-shipping.today');
+        Route::get('egg-shipping/calendar-events', [EggShippingController::class, 'calendarEvents'])->name('egg-shipping.calendar');
         Route::get('egg-shipping/invoice/{egg_shipping}/print', [EggShippingController::class, 'printInvoice'])->name('egg-shipping.print-invoice');
         Route::post('egg-shipping/validate-temperature', [EggShippingController::class, 'validateTemperature'])->name('egg-shipping.validate-temperature');
         Route::post('egg-shipping/{egg_shipping}/dispatch', [EggShippingController::class, 'dispatch'])->name('egg-shipping.dispatch');
