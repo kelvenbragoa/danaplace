@@ -5,6 +5,7 @@ namespace App\Http\Controllers\EggManagement;
 use App\Http\Controllers\Controller;
 use App\Models\EggModule\EggCustomer;
 use App\Models\EggModule\EggOrder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class EggOrderController extends Controller
@@ -43,6 +44,59 @@ class EggOrderController extends Controller
             ->get();
 
         return response()->json($orders);
+    }
+
+    public function calendarEvents(Request $request)
+    {
+        $request->validate([
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+        ]);
+
+        $statusColors = [
+            'pending' => '#e5a54b',
+            'approved' => '#36a4d9',
+            'picked' => '#3b7ddd',
+            'shipped' => '#1cbb8c',
+            'canceled' => '#adb5bd',
+        ];
+
+        $query = EggOrder::with('category', 'customer')
+            ->whereNotNull('expected_delivery_date')
+            ->orderBy('expected_delivery_date');
+
+        if ($request->filled('start') && $request->filled('end')) {
+            $query->whereBetween('expected_delivery_date', [
+                Carbon::parse($request->start)->startOfDay(),
+                Carbon::parse($request->end)->endOfDay(),
+            ]);
+        }
+
+        $events = $query->get()->map(function (EggOrder $order) use ($statusColors) {
+            $customer = $order->customer_name ?? 'Cliente';
+            $category = $order->category?->name ?? '';
+            $isToday = $order->expected_delivery_date?->isToday();
+            $color = $isToday ? '#1cbb8c' : ($statusColors[$order->status] ?? '#3b7ddd');
+
+            return [
+                'id' => $order->id,
+                'title' => $customer . ' — ' . ($category ?: 'Pedido #' . $order->id),
+                'start' => $order->expected_delivery_date->format('Y-m-d'),
+                'backgroundColor' => $color,
+                'borderColor' => $color,
+                'extendedProps' => [
+                    'customer' => $customer,
+                    'category' => $category,
+                    'quantity' => $order->quantity_dozens,
+                    'status' => $order->status,
+                    'order_date' => $order->order_date?->format('Y-m-d'),
+                    'expected_delivery_date' => $order->expected_delivery_date->format('Y-m-d'),
+                    'unit_price' => $order->unit_price,
+                ],
+            ];
+        });
+
+        return response()->json($events);
     }
 
     public function show(EggOrder $eggOrder)

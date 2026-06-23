@@ -546,6 +546,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         // 15. Egg Orders (Sales)
         // ============================================
         Route::get('egg-orders/pending-orders', [EggOrderController::class, 'pendingOrders'])->name('egg-orders.pending');
+        Route::get('egg-orders/calendar-events', [EggOrderController::class, 'calendarEvents'])->name('egg-orders.calendar');
         Route::get('egg-orders/invoice/{egg_order}', [EggOrderController::class, 'generateInvoice'])->name('egg-orders.invoice');
         Route::post('egg-orders/{egg_order}/approve', [EggOrderController::class, 'approve'])->name('egg-orders.approve');
         Route::post('egg-orders/{egg_order}/cancel', [EggOrderController::class, 'cancel'])->name('egg-orders.cancel');

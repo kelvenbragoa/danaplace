@@ -386,6 +386,7 @@ import ShowPackaging from './pages/admin/egg-module/packaging/ShowPackaging.vue'
 import EditPackaging from './pages/admin/egg-module/packaging/EditPackaging.vue';
 
 import IndexEggOrders from './pages/admin/egg-module/egg-orders/IndexEggOrders.vue';
+import CalendarEggOrders from './pages/admin/egg-module/egg-orders/CalendarEggOrders.vue';
 import CreateEggOrders from './pages/admin/egg-module/egg-orders/CreateEggOrders.vue';
 import ShowEggOrders from './pages/admin/egg-module/egg-orders/ShowEggOrders.vue';
 import EditEggOrders from './pages/admin/egg-module/egg-orders/EditEggOrders.vue';
@@ -2297,6 +2298,11 @@ export default [
         path: '/admin/pedidos',
         name: 'admin.pedidos.index',
         component: IndexEggOrders,
+    },
+    {
+        path: '/admin/pedidos/calendario',
+        name: 'admin.pedidos.calendar',
+        component: CalendarEggOrders,
     },
     {
         path: '/admin/pedidos/create',

@@ -236,6 +236,7 @@
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/estoque-ovos">Estoque de Ovos</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/clientes-ovos">Clientes</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/pedidos">Pedidos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/pedidos/calendario">Calendário Pedidos</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/expedicao-ovos">Expedição</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/expedicao-ovos/calendario">Calendário Expedição</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/rastreabilidade">Rastreabilidade</router-link></li>
