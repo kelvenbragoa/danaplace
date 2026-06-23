@@ -26,11 +26,11 @@ const statusLabels = {
 };
 
 const statusBadgeClass = {
-    pending: 'badge-warning',
-    approved: 'badge-info',
-    picked: 'badge-primary',
-    shipped: 'badge-success',
-    canceled: 'badge-secondary',
+    pending: 'bg-warning text-dark',
+    approved: 'bg-info text-dark',
+    picked: 'bg-primary',
+    shipped: 'bg-success',
+    canceled: 'bg-secondary',
 };
 
 const loadEvents = (info, successCallback, failureCallback) => {
@@ -113,10 +113,10 @@ const formatTotal = () => {
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body py-3">
-                        <span class="badge badge-warning me-1">Pendente</span>
-                        <span class="badge badge-info me-1">Aprovado</span>
-                        <span class="badge badge-primary me-1">Separado</span>
-                        <span class="badge badge-success me-1">Expedido</span>
+                        <span class="badge bg-warning text-dark me-1">Pendente</span>
+                        <span class="badge bg-info text-dark me-1">Aprovado</span>
+                        <span class="badge bg-primary me-1">Separado</span>
+                        <span class="badge bg-success me-1">Expedido</span>
                         <span class="badge me-1" style="background-color: #1cbb8c;">Hoje</span>
                         <small class="text-muted ms-2">Clique num evento para ver detalhes</small>
                     </div>
@@ -170,7 +170,7 @@ const formatTotal = () => {
                                 <p><strong>Total:</strong> {{ formatTotal() }}</p>
                                 <p>
                                     <strong>Estado:</strong>
-                                    <span class="badge" :class="statusBadgeClass[order.status] || 'badge-light'">
+                                    <span class="badge" :class="statusBadgeClass[order.status] || 'bg-light text-dark'">
                                         {{ statusLabels[order.status] || order.status }}
                                     </span>
                                 </p>

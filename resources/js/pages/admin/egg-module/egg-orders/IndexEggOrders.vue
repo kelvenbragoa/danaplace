@@ -27,11 +27,11 @@ const statusLabels = {
 };
 
 const statusBadgeClass = {
-    pending: 'badge-warning',
-    approved: 'badge-info',
-    picked: 'badge-primary',
-    shipped: 'badge-success',
-    canceled: 'badge-secondary',
+    pending: 'bg-warning text-dark',
+    approved: 'bg-info text-dark',
+    picked: 'bg-primary',
+    shipped: 'bg-success',
+    canceled: 'bg-secondary',
 };
 
 const getPendingCount = () => {
@@ -165,7 +165,7 @@ onMounted(() => {
                                         <td>{{ actualData.quantity_dozens }}</td>
                                         <td>{{ formatTotal(actualData) }}</td>
                                         <td>
-                                            <span class="badge" :class="statusBadgeClass[actualData.status] || 'badge-light'">
+                                            <span class="badge" :class="statusBadgeClass[actualData.status] || 'bg-light text-dark'">
                                                 {{ statusLabels[actualData.status] || actualData.status }}
                                             </span>
                                         </td>
