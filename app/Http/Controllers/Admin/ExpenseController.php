@@ -105,64 +105,72 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'expense_category_id' => 'required|exists:expense_categories,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'amount' => 'required|numeric|min:0',
-            // 'expense_date' => 'required|date',
-            'due_date' => 'nullable|date|after_or_equal:expense_date',
-            'payment_date' => 'nullable|date',
-            'payment_method' => 'nullable|in:cash,bank_transfer,check,card,other',
-            'vendor_name' => 'nullable|string|max:255',
-            'vendor_contact' => 'nullable|string|max:255',
-            'invoice_number' => 'nullable|string|max:255',
-            'reference_number' => 'nullable|string|max:255',
-            'priority' => 'required|in:low,medium,high,urgent',
-            'recurring' => 'boolean',
-            'recurring_frequency' => 'nullable|required_if:recurring,true|in:monthly,quarterly,semi_annual,annual',
-            'recurring_until' => 'nullable|date|after:expense_date',
-            'notes' => 'nullable|string',
-            'attachments' => 'nullable|array',
-            'attachments.*' => 'file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif'
-        ]);
-
-        $data = $request->all();
-        $data['expense_date'] = now();
-        $data['created_by'] = Auth::id();
-        $data['status'] = Expense::STATUS_PENDING;
-
-        // Processar uploads de arquivos
-        if ($request->hasFile('attachments')) {
-            $attachmentPaths = [];
-            foreach ($request->file('attachments') as $file) {
-                $path = $file->store('expense-attachments', 's3');
-                $attachmentPaths[] = $path;
+        try {
+            $request->validate([
+                'expense_category_id' => 'required|exists:expense_categories,id',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'amount' => 'required|numeric|min:0',
+                // 'expense_date' => 'required|date',
+                'due_date' => 'nullable|date|after_or_equal:expense_date',
+                'payment_date' => 'nullable|date',
+                'payment_method' => 'nullable|in:cash,bank_transfer,check,card,other',
+                'vendor_name' => 'nullable|string|max:255',
+                'vendor_contact' => 'nullable|string|max:255',
+                'invoice_number' => 'nullable|string|max:255',
+                'reference_number' => 'nullable|string|max:255',
+                'priority' => 'required|in:low,medium,high,urgent',
+                'recurring' => 'boolean',
+                'recurring_frequency' => 'nullable|required_if:recurring,true|in:monthly,quarterly,semi_annual,annual',
+                'recurring_until' => 'nullable|date|after:expense_date',
+                'notes' => 'nullable|string',
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif'
+            ]);
+    
+            $data = $request->all();
+            $data['expense_date'] = now();
+            $data['created_by'] = Auth::id();
+            $data['status'] = Expense::STATUS_PENDING;
+    
+            // Processar uploads de arquivos
+            if ($request->hasFile('attachments')) {
+                $attachmentPaths = [];
+                foreach ($request->file('attachments') as $file) {
+                    $path = $file->store('expense-attachments', 's3');
+                    $attachmentPaths[] = $path;
+                }
+                $data['attachments'] = $attachmentPaths;
             }
-            $data['attachments'] = $attachmentPaths;
-        }
-
-        
-
-        // Validar duplicação de fatura
-        if ($request->invoice_number) {
-            $existingExpense = Expense::where('invoice_number', $request->invoice_number)
-                ->where('vendor_name', $request->vendor_name)
-                ->exists();
-
-            if ($existingExpense) {
-                return response()->json([
-                    'message' => 'Já existe uma despesa com este número de fatura para este fornecedor.'
-                ], 422);
+    
+            
+    
+            // Validar duplicação de fatura
+            if ($request->invoice_number) {
+                $existingExpense = Expense::where('invoice_number', $request->invoice_number)
+                    ->where('vendor_name', $request->vendor_name)
+                    ->exists();
+    
+                if ($existingExpense) {
+                    return response()->json([
+                        'message' => 'Já existe uma despesa com este número de fatura para este fornecedor.'
+                    ], 422);
+                }
             }
+    
+            $expense = Expense::create($data);
+    
+            return response()->json([
+                'message' => 'Despesa criada com sucesso!',
+                'expense' => $expense->load(['expenseCategory', 'createdBy'])
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            Log::error('Erro ao criar despesa: ' . $th->getMessage());
+            return response()->json([
+                'message' => 'Erro ao criar despesa: ' . $th->getMessage(),
+            ], 500);
         }
-
-        $expense = Expense::create($data);
-
-        return response()->json([
-            'message' => 'Despesa criada com sucesso!',
-            'expense' => $expense->load(['expenseCategory', 'createdBy'])
-        ]);
     }
 
     /**
