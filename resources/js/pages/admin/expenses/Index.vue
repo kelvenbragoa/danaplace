@@ -271,7 +271,7 @@
                                             {{ getPriorityLabel(expense.priority) }}
                                         </span>
                                     </td>
-                                    <td>{{ expense.created_by_user?.name || '-' }}</td>
+                                    <td>{{ expense.created_by?.firstName + ' ' + expense.created_by?.lastName || '-' }}</td>
                                     <td>
                                         <div class="dropdown position-relative">
                                             <button 

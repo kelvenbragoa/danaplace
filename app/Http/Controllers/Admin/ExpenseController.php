@@ -146,17 +146,17 @@ class ExpenseController extends Controller
             
     
             // Validar duplicação de fatura
-            if ($request->invoice_number) {
-                $existingExpense = Expense::where('invoice_number', $request->invoice_number)
-                    ->where('vendor_name', $request->vendor_name)
-                    ->exists();
+            // if ($request->invoice_number) {
+            //     $existingExpense = Expense::where('invoice_number', $request->invoice_number)
+            //         ->where('vendor_name', $request->vendor_name)
+            //         ->exists();
     
-                if ($existingExpense) {
-                    return response()->json([
-                        'message' => 'Já existe uma despesa com este número de fatura para este fornecedor.'
-                    ], 422);
-                }
-            }
+            //     if ($existingExpense) {
+            //         return response()->json([
+            //             'message' => 'Já existe uma despesa com este número de fatura para este fornecedor.'
+            //         ], 422);
+            //     }
+            // }
     
             $expense = Expense::create($data);
     
