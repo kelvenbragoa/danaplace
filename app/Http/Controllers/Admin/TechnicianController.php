@@ -47,18 +47,22 @@ class TechnicianController extends Controller
         //
         $data = $request->all();
         if($request->has('image')){
-            $files = $request->file('image');
-            // foreach($files as $file){
-                $filename = $files->getClientOriginalName();
-                $extension = $files->getClientOriginalExtension();
-                $imagePath = $files->store('technician-images','s3');
-                $data['image'] =  $imagePath;
-            // }
+                $files = $request->file('image');
+                // foreach($files as $file){
+                    $filename = $files->getClientOriginalName();
+                    $extension = $files->getClientOriginalExtension();
+                    $imagePath = $files->store('technician-images','s3');
+                    $data['image'] =  $imagePath;
+                // }
+            
+        }else{
+            $data['image'] = null;
+        }
+
         $technician = Technician::create($data);
-        return [
+        return [   
             'message'=>'success'
         ];
-    }
     }
 
     /**
