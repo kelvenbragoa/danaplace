@@ -613,7 +613,7 @@ onMounted(() => {
                             <!-- Header da Fatura -->
                             <div class="row text-center">
                                 <div class="col text-center" style="text-align: center">
-                                    <h2>Areia Branca Condominium Fee Invoice</h2>
+                                    <h2>Dana Place Fee Invoice</h2>
                                 </div>
                             </div>
                             
@@ -641,7 +641,7 @@ onMounted(() => {
                             <div class="row">
                                 <div class="col">
                                     <p style="font-size:10px">
-                                        Condominio Areia Branca Lda
+                                        Dana Place
                                         <br />
                                         Cimento a Ponta de Ouro
                                         <br />
@@ -896,7 +896,7 @@ onMounted(() => {
                             <div class="row mt-4">
                                 <div class="col-12 text-center">
                                     <p style="font-size: 8px; color: #666;">
-                                        Esta fatura foi gerada automaticamente pelo sistema de gestão do Condomínio Areia Branca.<br>
+                                        Esta fatura foi gerada automaticamente pelo sistema de gestão do Condomínio Dana Place.<br>
                                         Para dúvidas ou esclarecimentos, entre em contato através dos canais oficiais.<br>
                                         <strong>Data de geração:</strong> {{ formatDateTime(new Date()) }}
                                     </p>
@@ -912,7 +912,7 @@ onMounted(() => {
                         <!-- Header da Fatura do Cliente -->
                         <div class="row text-center">
                             <div class="col text-center" style="text-align: center">
-                                <h2>Areia Branca Condominium Fee Invoice</h2>
+                                <h2>Dana Place Fee Invoice</h2>
                                 <h4>{{ destination.destination.name }}</h4>
                             </div>
                         </div>
@@ -941,7 +941,7 @@ onMounted(() => {
                         <div class="row">
                             <div class="col">
                                 <p style="font-size:10px">
-                                    Condominio Areia Branca Lda
+                                    Dana Place
                                     <br />
                                     Cimento a Ponta de Ouro
                                     <br />
@@ -1155,7 +1155,7 @@ onMounted(() => {
                         <div class="row mt-4">
                             <div class="col-12 text-center">
                                 <p style="font-size: 8px; color: #666;">
-                                    Esta fatura foi gerada automaticamente pelo sistema de gestão do Condomínio Areia Branca.<br>
+                                    Esta fatura foi gerada automaticamente pelo sistema de gestão do Condomínio Dana Place.<br>
                                     Fatura específica para: <strong>{{ destination.destination.name }}</strong><br>
                                     Para dúvidas ou esclarecimentos, entre em contato através dos canais oficiais.<br>
                                     <strong>Data de geração:</strong> {{ formatDateTime(new Date()) }}

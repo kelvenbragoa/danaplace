@@ -227,7 +227,7 @@ onMounted(()=>{
                                 <!-- Header da Ficha -->
                                 <div class="row text-center">
                                     <div class="col text-center" style="text-align: center">
-                                        <h2>Areia Branca Condominium</h2>
+                                        <h2>Dana Place</h2>
                                         <h3>Ficha do Funcionário</h3>
                                         <h4>{{ retrievedData.name }}</h4>
                                     </div>
@@ -264,7 +264,7 @@ onMounted(()=>{
                                 <div class="row">
                                     <div class="col">
                                         <p style="font-size:10px">
-                                            Condominio Areia Branca Lda
+                                            Dana Place
                                             <br />
                                             Cimento a Ponta de Ouro
                                             <br />
@@ -466,7 +466,7 @@ onMounted(()=>{
                                 <div class="row mt-4">
                                     <div class="col-12 text-center">
                                         <p style="font-size: 8px; color: #666;">
-                                            Esta ficha de funcionário foi gerada automaticamente pelo sistema de gestão do Condomínio Areia Branca.<br>
+                                            Esta ficha de funcionário foi gerada automaticamente pelo sistema de gestão do Condomínio Dana Place.<br>
                                             Documento confidencial para uso exclusivo do departamento de recursos humanos.<br>
                                             <strong>Data de geração:</strong> {{ formatDateTime(new Date()) }}
                                         </p>
@@ -488,7 +488,7 @@ onMounted(()=>{
                                                     alt="Logo"
                                                     style="width: 40px; height: 40px;"
                                                 />
-                                                <h6 style="font-size: 11px; margin: 3px 0 1px 0; color: #333; font-weight: bold;">AREIA BRANCA</h6>
+                                                <h6 style="font-size: 11px; margin: 3px 0 1px 0; color: #333; font-weight: bold;">Dana Place</h6>
                                                 <p style="font-size: 7px; margin: 0; color: #666;">CONDOMINIUM</p>
                                             </div>
                                             
@@ -538,7 +538,7 @@ onMounted(()=>{
                                         <!-- Informações da Empresa -->
                                         <div style="border: 1px solid #ddd; padding: 10px; text-align: center; border-radius: 5px;">
                                             <div style="font-size: 8px; color: #333;">
-                                                <p style="margin: 2px 0; font-weight: bold;">Condomínio Areia Branca Lda</p>
+                                                <p style="margin: 2px 0; font-weight: bold;">Condomínio Dana Place Lda</p>
                                                 <p style="margin: 1px 0;">Tel: +258 84 00 0000</p>
                                                 <p style="margin: 1px 0; font-size: 7px;">Em caso de perda, contactar a administração</p>
                                             </div>

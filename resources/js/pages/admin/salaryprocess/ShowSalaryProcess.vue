@@ -220,7 +220,7 @@
                 <!-- Header da Folha Salarial -->
                 <div class="row text-center">
                     <div class="col text-center" style="text-align: center">
-                        <h2>Areia Branca Condominium Payroll</h2>
+                        <h2>Dana Place Payroll</h2>
                         <h4>{{ salaryProcess.title }}</h4>
                         <h5>{{ formatMonthYear(salaryProcess.month, salaryProcess.year) }}</h5>
                     </div>
@@ -267,7 +267,7 @@
                 <div class="row">
                     <div class="col">
                         <p style="font-size:10px">
-                            Condominio Areia Branca Lda
+                            Dana Place
                             <br />
                             Cimento a Ponta de Ouro
                             <br />
@@ -435,7 +435,7 @@
                 <div class="row mt-4">
                     <div class="col-12 text-center">
                         <p style="font-size: 8px; color: #666;">
-                            Esta folha salarial foi gerada automaticamente pelo sistema de gestão do Condomínio Areia Branca.<br>
+                            Esta folha salarial foi gerada automaticamente pelo sistema de gestão do Condomínio Dana Place.<br>
                             Documento confidencial - uso exclusivo do departamento de recursos humanos.<br>
                             <strong>Data de geração:</strong> {{ formatDateTime(new Date()) }} | 
                             <strong>Período:</strong> {{ formatMonthYear(salaryProcess.month, salaryProcess.year) }}
@@ -451,7 +451,7 @@
                 <!-- Header do Payslip -->
                 <div class="row text-center">
                     <div class="col text-center" style="text-align: center">
-                        <h2>Areia Branca Condominium</h2>
+                        <h2>Dana Place</h2>
                         <h3>Recibo de Salário / Payslip</h3>
                         <h4>{{ formatMonthYear(salaryProcess.month, salaryProcess.year) }}</h4>
                     </div>
@@ -489,7 +489,7 @@
                 <div class="row">
                     <div class="col">
                         <p style="font-size:10px">
-                            Condominio Areia Branca Lda
+                            Dana Place
                             <br />
                             Cimento a Ponta de Ouro
                             <br />
@@ -695,7 +695,7 @@
                 <div class="row mt-4">
                     <div class="col-12 text-center">
                         <p style="font-size: 8px; color: #666;">
-                            Este recibo de salário foi gerado automaticamente pelo sistema de gestão do Condomínio Areia Branca.<br>
+                            Este recibo de salário foi gerado automaticamente pelo sistema de gestão do Condomínio Dana Place.<br>
                             Documento confidencial de uso pessoal do funcionário.<br>
                             <strong>Data de geração:</strong> {{ formatDateTime(new Date()) }} | 
                             <strong>Período:</strong> {{ formatMonthYear(salaryProcess.month, salaryProcess.year) }}

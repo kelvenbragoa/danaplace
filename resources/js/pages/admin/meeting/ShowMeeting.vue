@@ -439,7 +439,7 @@ onMounted(()=>{
                                                             <div class="col">
                                                                 
                                                                 <p style="font-size:10px">
-                                                                    Condominio Areia Branca Lda
+                                                                    Dana Place
                                                                     <br />
                                                                     Cimento a Ponta de Ouro
                                                                     <br />

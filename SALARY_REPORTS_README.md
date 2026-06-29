@@ -14,7 +14,7 @@
 **Conteúdo do Relatório:**
 ```
 🏢 HEADER DA EMPRESA
-├─ Logo Areia Branca
+├─ Logo Dana Place
 ├─ Dados institucionais (NUIT, endereço, telefone)
 
 📋 DETALHES DO PROCESSO

@@ -114,7 +114,7 @@
             <div id="print-entry-guide" style="font-family: Arial, sans-serif; font-size: 9px; line-height: 1.3;">
                 <!-- Header Compacto -->
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <h3 style="margin: 0; font-size: 16px; font-weight: bold;">Areia Branca Condominium</h3>
+                    <h3 style="margin: 0; font-size: 16px; font-weight: bold;">Dana Place</h3>
                     <h4 style="margin: 3px 0; font-size: 14px;">Guia de Entrada Nº {{ entryGuide.guide_number }}</h4>
                 </div>
                 
@@ -123,7 +123,7 @@
                     <div style="width: 30%;">
                         <img src="/files/img/sys/companylogo.png" alt="Logo" style="width: 80px; height: 80px;" />
                         <div style="font-size: 8px; margin-top: 4px;">
-                            Condominio Areia Branca Lda<br/>
+                            Dana Place<br/>
                             Cimento a Ponta de Ouro<br/>
                             Tel: +258 84 000 0000<br/>
                             info@areiabranca.com
@@ -231,7 +231,7 @@
 
                 <!-- Rodapé Compacto -->
                 <div style="text-align: center; font-size: 6px; color: #666; margin-top: 6px;">
-                    Guia gerada automaticamente - Sistema Condomínio Areia Branca | 
+                    Guia gerada automaticamente - Sistema Condomínio Dana Place | 
                     Geração: {{ formatDate(new Date()) }} | 
                     Válida: {{ formatDate(entryGuide.valid_from) }} até {{ formatDate(entryGuide.valid_until) }}
                 </div>

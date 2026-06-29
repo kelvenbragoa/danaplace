@@ -147,7 +147,7 @@ onMounted(() => {
                                     <!-- <div class="text-muted">Área de Manutenção</div> -->
                                     <!-- <strong> {{ retrievedData.area.name ?? 'N/A' }} </strong> -->
                                     <p style="font-size:10px">
-                                        Condominio Areia Branca Lda
+                                        Dana Place
                                         <br />
                                         Cimento a Ponta de Ouro
                                         <br />

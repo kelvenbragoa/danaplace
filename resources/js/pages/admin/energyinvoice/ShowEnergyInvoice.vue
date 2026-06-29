@@ -732,7 +732,7 @@ onMounted(() => {
         <div id="print-me" class="d-none d-print-block">
             <div class="row text-center">
                 <div class="col text-center" style="text-align: center">
-                    <h2>Areia Branca Condominium Energy Bill</h2>
+                    <h2>Dana Place</h2>
                 </div>
             </div>
             <div class="row">
@@ -757,7 +757,7 @@ onMounted(() => {
             <div class="row">
                 <div class="col">
                     <p style="font-size:10px">
-                        Condominio Areia Branca Lda
+                        Dana Place
                         <br />
                         Cimento a Ponta de Ouro
                         <br />
@@ -939,7 +939,7 @@ onMounted(() => {
                 </div>
                 <div class="col">
                     <p style="font-size:10px">
-                        Condominio Areia Branca Lda<br />
+                        Dana Place<br />
                         Cimento a Ponta de Ouro<br />
                         Matutuine, Moçambique<br />
                         Tel: +258 87 914 1774<br />

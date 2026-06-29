@@ -155,7 +155,7 @@ onMounted(()=>{
                                                         style="text-align: left"
                                                     >
                                                    <p style="font-size:10px">
-                                                        Condominio Areia Branca Lda
+                                                        Dana Place
                                                         <br />
                                                         Cimento a Ponta de Ouro
                                                         <br />
@@ -261,7 +261,7 @@ onMounted(()=>{
 
                                             <p style="font-size:10px">
                                                <strong>Detalhes bancários:</strong>  <br>
-                                                    Nome da conta: Condominio Areia Branca Lda NUIT: 400634319 <br> <br>
+                                                    Nome da conta: Dana Place NUIT: 400634319 <br> <br>
                                                     <strong>Access Bank</strong>  <br>
                                                     MZN Conta No.: 00002841450113 <br>
                                                     MZN NIB: 006600100284145011320 <br>

@@ -357,11 +357,11 @@
         <div class="header">
             <div class="company-header">
                 <div class="company-logo">
-                    <img src="{{ public_path('companylogo.png') }}" alt="Logo Areia Branca" class="logo-img">
+                    <img src="{{ public_path('companylogo.png') }}" alt="Logo Dana Place" class="logo-img">
                 </div>
                 
                 <div class="company-info">
-                    <h1>Areia Branca</h1>
+                    <h1>Dana Place</h1>
                     <p>NUIT: 8300202</p>
                     <p>Maputo - Ponta de Ouro</p>
                     <p>Tel: 840127200</p>
@@ -529,7 +529,7 @@
         <div class="footer">
             <div class="footer-content">
                 <div class="footer-left">
-                    <h4>Areia Branca</h4>
+                    <h4>Dana Place</h4>
                     <p>NUIT: 8300202 | Maputo - Ponta de Ouro | Tel: 840127200</p>
                 </div>
                 <div class="footer-right">
