@@ -126,11 +126,13 @@ class TechnicianController extends Controller
                 $data['image'] =  $imagePath;
             // }
 
+        }else{
+            $data['image'] = $technician->image;
+        }
+
         $technician->update($data);
 
         return $technician;
-
-    }
 }
 
     /**

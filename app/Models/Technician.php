@@ -26,7 +26,8 @@ class Technician extends Model
         'province',
         'city',
         'civil_status',
-        'image'
+        'image',
+        'mobile_phone'
     ];
 
     public function department(){

@@ -111,6 +111,7 @@ onMounted(()=>{
                                                         <th>Nome</th>
                                                         <th>Código</th>
                                                         <th>Documento</th>
+                                                        <th>Telefone Celular</th>
                                                         <th>Departamento</th>
                                                         <th>Área</th>
                                                         <th>Data de Admissão</th>
@@ -126,6 +127,7 @@ onMounted(()=>{
                                                         <td>{{ actualData.name}}</td>
                                                         <td>{{ actualData.code}}</td>
                                                         <td>{{ actualData.document}}</td>
+                                                        <td>{{ actualData.mobile_phone}}</td>
                                                         <td>{{ actualData.department.name}}</td>
                                                         <td>{{ actualData.area.name}}</td>
                                                         <td>{{ moment(actualData.admission_date).format('DD-MM-YYYY')}}</td>

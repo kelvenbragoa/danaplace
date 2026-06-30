@@ -137,6 +137,15 @@ onMounted(()=>{
                                                                 <span class="invalid-feedback">{{ errors.document }}</span>
                                                             </div>
                                                         </div>
+
+                                                        <div class="row">
+                                                            <div class="mb-3 col-md-12">
+                                                                <label class="form-label" for="mobile_phone">Telefone Celular</label>
+                                                                <Field type="text" class="form-control" :class="{'is-invalid':errors.mobile_phone}" name="mobile_phone" v-model="retrievedData.mobile_phone" id="mobile_phone" placeholder="Telefone Celular"/>
+                                                                <span class="invalid-feedback">{{ errors.mobile_phone }}</span>
+                                                            </div>
+                                                        </div>
+                                                        
                                                         <div class="row">
 													<div class="mb-3 col-md-12">
 														<label class="form-label" for="document">Salário</label>

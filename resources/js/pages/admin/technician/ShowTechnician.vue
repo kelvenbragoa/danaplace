@@ -143,7 +143,8 @@ onMounted(()=>{
                                                 <div class="w-100">
                                                     <p>Nome do Técnico: {{ retrievedData.name }}</p>     
                                                     <p>Código: {{ retrievedData.code }}</p>     
-                                                    <p>Documento: {{ retrievedData.document }}</p>     
+                                                    <p>Documento: {{ retrievedData.document }}</p>   
+                                                    <p>Telefone Celular: {{ retrievedData.mobile_phone }}</p>   
                                                     <p>Departamento: {{ retrievedData.department.name }}</p>  
                                                     <p>Área: {{ retrievedData.area.name }}</p>  
                                                     <p>Data de Admissão: {{ retrievedData.admission_date }}</p>  
