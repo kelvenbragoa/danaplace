@@ -16,8 +16,16 @@ class EggCustomerPortalController extends Controller
             'portal_code' => 'required|string|max:20',
         ]);
 
-        $customer = EggCustomer::where('portal_code', strtoupper(trim($validated['portal_code'])))
-            ->where('is_active', true)
+        $code = trim($validated['portal_code']);
+
+        $customer = EggCustomer::where('is_active', true)
+            ->where(function ($query) use ($code) {
+                $query->where('portal_code', strtoupper($code));
+
+                if (preg_match('/^\d+$/', $code)) {
+                    $query->orWhere('id', (int) $code);
+                }
+            })
             ->first();
 
         if (!$customer) {

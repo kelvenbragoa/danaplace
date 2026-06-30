@@ -104,7 +104,7 @@ onMounted(() => {
                                     <span class="invalid-feedback">{{ errors.expected_delivery_date }}</span>
                                 </div>
                                 <div class="mb-3 col-md-4">
-                                    <label class="form-label" for="quantity_dozens">Quantidade (dúzias)</label>
+                                    <label class="form-label" for="quantity_dozens">Quantidade</label>
                                     <Field type="number" class="form-control" :class="{'is-invalid': errors.quantity_dozens}" name="quantity_dozens" v-model="retrievedData.quantity_dozens" id="quantity_dozens" min="1"/>
                                     <span class="invalid-feedback">{{ errors.quantity_dozens }}</span>
                                 </div>

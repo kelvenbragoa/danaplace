@@ -1,7 +1,7 @@
 <script setup>
 
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
@@ -14,8 +14,21 @@ const loadingInvoice = ref(false);
 const loadingTemp = ref(false);
 const tempInput = ref(null);
 const tempResult = ref(null);
+const dispatchForm = ref({
+    delivery_note_number: '',
+    delivered_to: '',
+    delivered_at: '',
+});
 const router = useRouter();
 const toastr = useToastr();
+
+const isDispatched = computed(() => Boolean(retrievedData.value.delivered_at));
+
+const nowForInput = () => {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date.toISOString().slice(0, 16);
+};
 
 const getData = () => {
     axios.get(`/admin/egg-shipping/${router.currentRoute.value.params.id}`)
@@ -23,6 +36,9 @@ const getData = () => {
             loadingDiv.value = false;
             retrievedData.value = response.data;
             tempInput.value = response.data.vehicle_temperature;
+            if (!response.data.delivered_at) {
+                dispatchForm.value.delivered_to = response.data.order?.customer_name || '';
+            }
         }).catch(() => {
             loadingDiv.value = false;
             toastr.error('Registo não encontrado');
@@ -31,17 +47,30 @@ const getData = () => {
 };
 
 const dispatchNow = () => {
+    if (!dispatchForm.value.delivered_to.trim()) {
+        toastr.error('Informe a quem foi entregue');
+        return;
+    }
+
+    if (!dispatchForm.value.delivered_at) {
+        toastr.error('Informe a data e hora da entrega');
+        return;
+    }
+
     loadingDispatch.value = true;
 
-    axios.post(`/admin/egg-shipping/${retrievedData.value.id}/dispatch`)
-        .then((response) => {
-            retrievedData.value = response.data;
-            toastr.success('Expedição despachada com data de hoje');
-        }).catch(() => {
-            toastr.error('Erro ao despachar');
-        }).finally(() => {
-            loadingDispatch.value = false;
-        });
+    axios.post(`/admin/egg-shipping/${retrievedData.value.id}/dispatch`, {
+        delivery_note_number: dispatchForm.value.delivery_note_number || null,
+        delivered_to: dispatchForm.value.delivered_to.trim(),
+        delivered_at: dispatchForm.value.delivered_at,
+    }).then((response) => {
+        retrievedData.value = response.data;
+        toastr.success('Expedição despachada. Pedido marcado como Expedido.');
+    }).catch((error) => {
+        toastr.error(error.response?.data?.message || 'Erro ao despachar');
+    }).finally(() => {
+        loadingDispatch.value = false;
+    });
 };
 
 const printInvoice = () => {
@@ -83,6 +112,7 @@ const validateTemperature = () => {
 };
 
 onMounted(() => {
+    dispatchForm.value.delivered_at = nowForInput();
     getData();
 });
 
@@ -134,6 +164,41 @@ onMounted(() => {
 
                         <hr>
 
+                        <div v-if="isDispatched" class="mb-4">
+                            <h6>Guia de Entrega</h6>
+                            <span class="badge badge-success mb-2">Expedido</span>
+                            <p><strong>Nº Guia:</strong> {{ retrievedData.delivery_note_number || '-' }}</p>
+                            <p><strong>Entregue a:</strong> {{ retrievedData.delivered_to }}</p>
+                            <p><strong>Data/Hora:</strong> {{ moment(retrievedData.delivered_at).format('DD-MM-YYYY HH:mm') }}</p>
+                        </div>
+
+                        <div v-else class="card border-warning mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title">Despachar expedição — Guia de Entrega</h6>
+                                <p class="text-muted small mb-3">Ao despachar, o pedido do cliente passará para o estado <strong>Expedido</strong>.</p>
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="delivery_note_number">Nº Guia de Entrega</label>
+                                        <input type="text" id="delivery_note_number" class="form-control" v-model="dispatchForm.delivery_note_number" placeholder="Ex: GE-2026-001">
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="delivered_to">Entregue a</label>
+                                        <input type="text" id="delivered_to" class="form-control" v-model="dispatchForm.delivered_to" placeholder="Nome de quem recebeu" required>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="delivered_at">Data e Hora</label>
+                                        <input type="datetime-local" id="delivered_at" class="form-control" v-model="dispatchForm.delivered_at" required>
+                                    </div>
+                                </div>
+                                <button class="btn btn-warning" @click.prevent="dispatchNow" :disabled="loadingDispatch">
+                                    <div v-if="loadingDispatch" class="spinner-border spinner-border-sm" role="status"></div>
+                                    <span v-else>Despachar e registar entrega</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr>
+
                         <div class="row align-items-end mb-3">
                             <div class="col-md-3">
                                 <label class="form-label" for="temp_check">Validar Temperatura (°C)</label>
@@ -151,11 +216,6 @@ onMounted(() => {
                                 </span>
                             </div>
                         </div>
-
-                        <button class="btn btn-warning mr-2" @click.prevent="dispatchNow" :disabled="loadingDispatch">
-                            <div v-if="loadingDispatch" class="spinner-border spinner-border-sm" role="status"></div>
-                            <span v-else>Despachar Hoje</span>
-                        </button>
 
                         <button class="btn btn-success" @click.prevent="printInvoice" :disabled="loadingInvoice">
                             <div v-if="loadingInvoice" class="spinner-border spinner-border-sm" role="status"></div>

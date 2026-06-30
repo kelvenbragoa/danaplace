@@ -266,7 +266,7 @@ onMounted(() => {
                                             </div>
                                             <div class="row">
                                                 <div class="mb-3 col-md-4">
-                                                    <label class="form-label">Quantidade (dúzias)</label>
+                                                    <label class="form-label">Quantidade</label>
                                                     <input v-model="form.quantity_dozens" type="number" min="1" class="form-control" required />
                                                 </div>
                                                 <div class="mb-3 col-md-8">
@@ -306,7 +306,7 @@ onMounted(() => {
                                                         <th>Data</th>
                                                         <th>Entrega Prevista</th>
                                                         <th>Categoria</th>
-                                                        <th>Dúzias</th>
+                                                        <th>Quantidade</th>
                                                         <th>Estado</th>
                                                         <th>Observações</th>
                                                     </tr>

@@ -109,7 +109,10 @@ onMounted(() => {
                                             <div>{{ actualData.email || '—' }}</div>
                                             <small class="text-muted">{{ actualData.phone || '' }}</small>
                                         </td>
-                                        <td><code>{{ actualData.portal_code }}</code></td>
+                                        <td>
+                                            <code>{{ actualData.portal_code }}</code> <br>
+                                            <code>{{ String(actualData.id).padStart(3, '0') }}</code>
+                                        </td>
                                         <td>
                                             <span class="badge" :class="actualData.is_active ? 'badge-success' : 'badge-secondary'">
                                                 {{ actualData.is_active ? 'Ativo' : 'Inativo' }}

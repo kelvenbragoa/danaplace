@@ -7,6 +7,7 @@ import { Form, Field } from 'vee-validate';
 import { useRouter } from 'vue-router';
 import * as yup from 'yup';
 import VueFeather from 'vue-feather';
+import moment from 'moment';
 
 const retrievedData = ref({});
 const loadingButtonSubmit = ref(false);
@@ -21,13 +22,29 @@ const schema = yup.object({
     vehicle_temperature: yup.number().nullable(),
     seal_number: yup.string().nullable(),
     health_certificate: yup.string().nullable(),
+    delivery_note_number: yup.string().nullable(),
+    delivered_to: yup.string().nullable(),
+    delivered_at: yup.string().nullable(),
 });
+
+
+
+const formatDeliveredAtForInput = (value) => {
+    if (!value) {
+        return '';
+    }
+
+    return moment(value).format('YYYY-MM-DDTHH:mm');
+};
 
 const getData = () => {
     axios.get(`/admin/egg-shipping/${router.currentRoute.value.params.id}`)
         .then((response) => {
             loadingDiv.value = false;
-            retrievedData.value = response.data;
+            retrievedData.value = {
+                ...response.data,
+                delivered_at: formatDeliveredAtForInput(response.data.delivered_at),
+            };
         }).catch(() => {
             loadingDiv.value = false;
             toastr.error('Registo não encontrado');
@@ -117,6 +134,25 @@ onMounted(() => {
                                     <label class="form-label" for="health_certificate">Certificado Sanitário</label>
                                     <Field type="text" class="form-control" :class="{'is-invalid': errors.health_certificate}" name="health_certificate" v-model="retrievedData.health_certificate" id="health_certificate"/>
                                     <span class="invalid-feedback">{{ errors.health_certificate }}</span>
+                                </div>
+                            </div>
+
+                            <h6 class="mt-2 mb-3">Guia de Entrega</h6>
+                            <div class="row">
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" for="delivery_note_number">Nº Guia de Entrega</label>
+                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.delivery_note_number}" name="delivery_note_number" v-model="retrievedData.delivery_note_number" id="delivery_note_number"/>
+                                    <span class="invalid-feedback">{{ errors.delivery_note_number }}</span>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" for="delivered_to">Entregue a</label>
+                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.delivered_to}" name="delivered_to" v-model="retrievedData.delivered_to" id="delivered_to"/>
+                                    <span class="invalid-feedback">{{ errors.delivered_to }}</span>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" for="delivered_at">Data e Hora da Entrega</label>
+                                    <Field type="datetime-local" class="form-control" :class="{'is-invalid': errors.delivered_at}" name="delivered_at" v-model="retrievedData.delivered_at" id="delivered_at"/>
+                                    <span class="invalid-feedback">{{ errors.delivered_at }}</span>
                                 </div>
                             </div>
 

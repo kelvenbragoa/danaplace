@@ -4,7 +4,6 @@ namespace App\Http\Controllers\EggManagement;
 
 use App\Http\Controllers\Controller;
 use App\Models\EggModule\EggInventory;
-use App\Models\EggModule\EggOrder;
 use App\Models\EggModule\EggShipping;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,6 +18,8 @@ class EggShippingController extends Controller
             ->when($searchQuery, function ($q, $searchQuery) {
                 $q->where(function ($sub) use ($searchQuery) {
                     $sub->where('invoice_number', 'like', "%{$searchQuery}%")
+                        ->orWhere('delivery_note_number', 'like', "%{$searchQuery}%")
+                        ->orWhere('delivered_to', 'like', "%{$searchQuery}%")
                         ->orWhere('carrier', 'like', "%{$searchQuery}%")
                         ->orWhere('driver_name', 'like', "%{$searchQuery}%")
                         ->orWhere('vehicle_plate', 'like', "%{$searchQuery}%")
@@ -123,17 +124,44 @@ class EggShippingController extends Controller
         $shipping = EggShipping::create($validated);
 
         EggInventory::find($validated['inventory_id'])
-            ->update(['status' => 'shipped', 'exit_date' => $validated['shipping_date']]);
-
-        EggOrder::find($validated['order_id'])
-            ->update(['status' => 'shipped']);
+            ->update(['status' => 'reserved']);
 
         return response()->json($shipping->load('order.category', 'inventory.egg'), 201);
     }
 
-    public function dispatch(EggShipping $eggShipping)
+    public function dispatch(Request $request, EggShipping $eggShipping)
     {
-        $eggShipping->update(['shipping_date' => Carbon::today()]);
+        if ($eggShipping->delivered_at) {
+            return response()->json([
+                'message' => 'Esta expedição já foi despachada.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'delivery_note_number' => 'nullable|string|max:50',
+            'delivered_to' => 'required|string|max:100',
+            'delivered_at' => 'required|date',
+        ]);
+
+        $deliveredAt = Carbon::parse($validated['delivered_at']);
+
+        $eggShipping->update([
+            'delivery_note_number' => $validated['delivery_note_number'] ?? null,
+            'delivered_to' => $validated['delivered_to'],
+            'delivered_at' => $deliveredAt,
+            'shipping_date' => $deliveredAt->toDateString(),
+        ]);
+
+        if ($eggShipping->inventory) {
+            $eggShipping->inventory->update([
+                'status' => 'shipped',
+                'exit_date' => $deliveredAt->toDateString(),
+            ]);
+        }
+
+        if ($eggShipping->order) {
+            $eggShipping->order->update(['status' => 'shipped']);
+        }
 
         return response()->json($eggShipping->load('order.category', 'inventory.egg'));
     }
@@ -167,6 +195,9 @@ class EggShippingController extends Controller
             'vehicle_temperature' => 'nullable|numeric',
             'seal_number' => 'nullable|string|max:50',
             'health_certificate' => 'nullable|string|max:100',
+            'delivery_note_number' => 'nullable|string|max:50',
+            'delivered_to' => 'nullable|string|max:100',
+            'delivered_at' => 'nullable|date',
         ]);
 
         $eggShipping->update($validated);
@@ -182,7 +213,7 @@ class EggShippingController extends Controller
         }
 
         $order = $eggShipping->order;
-        if ($order) {
+        if ($order && $order->status !== 'canceled') {
             $order->update(['status' => 'picked']);
         }
 

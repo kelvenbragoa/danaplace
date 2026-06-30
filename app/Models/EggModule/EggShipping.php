@@ -14,11 +14,13 @@ class EggShipping extends Model
     protected $fillable = [
         'order_id', 'inventory_id', 'shipping_date', 'invoice_number', 
         'carrier', 'vehicle_plate', 'driver_name', 'vehicle_temperature', 
-        'seal_number', 'health_certificate', 'responsible_id'
+        'seal_number', 'health_certificate', 'delivery_note_number',
+        'delivered_to', 'delivered_at', 'responsible_id'
     ];
 
     protected $casts = [
         'shipping_date' => 'date',
+        'delivered_at' => 'datetime',
     ];
 
     public function order()

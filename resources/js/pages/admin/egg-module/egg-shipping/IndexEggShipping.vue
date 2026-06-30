@@ -114,6 +114,8 @@ onMounted(() => {
                                         <th>Transportadora</th>
                                         <th>Motorista</th>
                                         <th>Matrícula</th>
+                                        <th>Estado</th>
+                                        <th>Entregue a</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -127,6 +129,12 @@ onMounted(() => {
                                         <td>{{ actualData.driver_name }}</td>
                                         <td>{{ actualData.vehicle_plate }}</td>
                                         <td>
+                                            <span class="badge" :class="actualData.delivered_at ? 'badge-success' : 'badge-warning'">
+                                                {{ actualData.delivered_at ? 'Expedido' : 'Pendente' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ actualData.delivered_to || '-' }}</td>
+                                        <td>
                                             <router-link :to="'/admin/expedicao-ovos/' + actualData.id + '/edit'"><vue-feather type="edit-2"></vue-feather></router-link>
                                             <router-link :to="'/admin/expedicao-ovos/' + actualData.id"><vue-feather type="eye"></vue-feather></router-link>
                                             <a href="#" @click.prevent="confirmDeletion(actualData)"><vue-feather type="trash"></vue-feather></a>
@@ -135,7 +143,7 @@ onMounted(() => {
                                 </tbody>
                                 <tbody v-else>
                                     <tr>
-                                        <td colspan="8" align="center">Nenhum resultado encontrado</td>
+                                        <td colspan="10" align="center">Nenhum resultado encontrado</td>
                                     </tr>
                                 </tbody>
                             </table>
