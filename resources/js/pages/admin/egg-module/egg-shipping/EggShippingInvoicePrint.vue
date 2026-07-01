@@ -103,7 +103,7 @@ const lineTotal = () => {
                         <th class="bg-secondary" style="font-size:10px">#</th>
                         <th class="bg-secondary" style="font-size:10px">Descrição</th>
                         <th class="bg-secondary" style="font-size:10px">Categoria</th>
-                        <th class="bg-secondary" style="font-size:10px">Quantidade (dz)</th>
+                        <th class="bg-secondary" style="font-size:10px">Quantidade</th>
                         <th class="bg-secondary" style="font-size:10px">Preço Unit.</th>
                         <th class="bg-secondary" style="font-size:10px">Total</th>
                     </tr>
