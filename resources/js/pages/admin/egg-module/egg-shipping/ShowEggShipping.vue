@@ -6,6 +6,8 @@ import { useRouter } from 'vue-router';
 import { useToastr } from '../../../../toastr';
 import VueFeather from 'vue-feather';
 import moment from 'moment';
+import { usePaperizer } from 'paperizer';
+import EggShippingInvoicePrint from './EggShippingInvoicePrint.vue';
 
 const retrievedData = ref({});
 const loadingDiv = ref(true);
@@ -21,6 +23,12 @@ const dispatchForm = ref({
 });
 const router = useRouter();
 const toastr = useToastr();
+
+const { paperize } = usePaperizer('print-egg-shipping-invoice', {
+    styles: [
+        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+    ],
+});
 
 const isDispatched = computed(() => Boolean(retrievedData.value.delivered_at));
 
@@ -76,15 +84,13 @@ const dispatchNow = () => {
 const printInvoice = () => {
     loadingInvoice.value = true;
 
-    axios.get(`/admin/egg-shipping/invoice/${retrievedData.value.id}/print`)
-        .then((response) => {
-            console.log('Fatura:', response.data);
-            toastr.success('Dados da fatura gerados (ver consola)');
-        }).catch(() => {
-            toastr.error('Erro ao gerar fatura');
-        }).finally(() => {
-            loadingInvoice.value = false;
-        });
+    try {
+        paperize();
+    } catch {
+        toastr.error('Erro ao imprimir fatura');
+    } finally {
+        loadingInvoice.value = false;
+    }
 };
 
 const validateTemperature = () => {
@@ -219,12 +225,14 @@ onMounted(() => {
 
                         <button class="btn btn-success" @click.prevent="printInvoice" :disabled="loadingInvoice">
                             <div v-if="loadingInvoice" class="spinner-border spinner-border-sm" role="status"></div>
-                            <span v-else>Gerar Fatura</span>
+                            <span v-else>Imprimir Fatura</span>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <EggShippingInvoicePrint v-if="retrievedData.id" :shipping="retrievedData" />
     </div>
 
     <div v-else>
