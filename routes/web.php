@@ -156,6 +156,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
     Route::resource('fee-invoices', 'App\Http\Controllers\Admin\FeeInvoiceController');
 
     Route::resource('departments', 'App\Http\Controllers\Admin\DepartmentsController');
+    Route::resource('contract-types', 'App\Http\Controllers\Admin\ContractTypeController');
     Route::resource('technicians', 'App\Http\Controllers\Admin\TechnicianController');
     
     // Rotas para plano de férias

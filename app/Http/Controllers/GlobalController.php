@@ -12,6 +12,7 @@ use App\Models\City;
 use App\Models\Coin;
 use App\Models\Consequence;
 use App\Models\Criticaly;
+use App\Models\ContractType;
 use App\Models\Department;
 use App\Models\Destination;
 use App\Models\DistanceControl;
@@ -509,10 +510,12 @@ class GlobalController extends Controller
     public function auxiliarcreatetechnician(){
         $departments = Department::orderBy('name','asc')->get();
         $areas = Area::orderBy('name','asc')->get();
+        $contractTypes = ContractType::active()->orderBy('name','asc')->get();
 
         return[
             'departments'=>$departments,
-            'areas'=>$areas
+            'areas'=>$areas,
+            'contract_types'=>$contractTypes,
         ];
     }
 

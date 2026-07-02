@@ -147,6 +147,12 @@ onMounted(()=>{
                                                     <p>Telefone Celular: {{ retrievedData.mobile_phone }}</p>   
                                                     <p>Departamento: {{ retrievedData.department.name }}</p>  
                                                     <p>Área: {{ retrievedData.area.name }}</p>  
+                                                    <p v-if="retrievedData.contract_type">Tipo de Contrato: {{ retrievedData.contract_type.name }}</p>
+                                                    <template v-if="retrievedData.contract_type?.extra_fields?.length && retrievedData.contract_extra_data">
+                                                        <p v-for="field in retrievedData.contract_type.extra_fields" :key="field.key">
+                                                            {{ field.label }}: {{ retrievedData.contract_extra_data[field.key] || '-' }}
+                                                        </p>
+                                                    </template>
                                                     <p>Data de Admissão: {{ retrievedData.admission_date }}</p>  
                                                     <p>Anos de trabalho: {{ moment().diff(retrievedData.admission_date,'years')}} Anos</p>
                                                     <p>Estado: 
@@ -490,7 +496,7 @@ onMounted(()=>{
                                                     style="width: 40px; height: 40px;"
                                                 />
                                                 <h6 style="font-size: 11px; margin: 3px 0 1px 0; color: #333; font-weight: bold;">Dana Place</h6>
-                                                <p style="font-size: 7px; margin: 0; color: #666;">CONDOMINIUM</p>
+                                                
                                             </div>
                                             
                                             <!-- Informações do Funcionário -->

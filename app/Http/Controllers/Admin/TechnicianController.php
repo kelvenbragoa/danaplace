@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Area;
+use App\Models\ContractType;
 use App\Models\Department;
 use App\Models\Technician;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ class TechnicianController extends Controller
             })
             ->with('department')
             ->with('area')
+            ->with('contract_type')
             ->orderBy('name','asc')
             ->paginate();
 
@@ -46,6 +48,7 @@ class TechnicianController extends Controller
     {
         //
         $data = $request->all();
+        $data = $this->prepareContractData($data);
         if($request->has('image')){
                 $files = $request->file('image');
                 // foreach($files as $file){
@@ -71,7 +74,7 @@ class TechnicianController extends Controller
     public function show(string $id)
     {
         //
-        $technician = Technician::with('department')->with('area')->find($id);
+        $technician = Technician::with('department')->with('area')->with('contract_type')->find($id);
 
         if($technician->image){
 
@@ -98,10 +101,12 @@ class TechnicianController extends Controller
         $technician = Technician::find($id);
         $departments = Department::orderBy('name','asc')->get();
         $areas = Area::orderBy('name','asc')->get();
+        $contractTypes = ContractType::active()->orderBy('name','asc')->get();
         
         return [
             'departments'=>$departments,
             'areas'=>$areas,
+            'contract_types'=>$contractTypes,
             'technician'=>$technician
         ];
     }
@@ -113,6 +118,7 @@ class TechnicianController extends Controller
     {
         //
         $data = $request->all();
+        $data = $this->prepareContractData($data);
 
 
         $technician = Technician::find($id);
@@ -147,5 +153,20 @@ class TechnicianController extends Controller
         $technician->delete();
 
         return true;
+    }
+
+    private function prepareContractData(array $data): array
+    {
+        if (isset($data['contract_extra_data']) && is_string($data['contract_extra_data'])) {
+            $decoded = json_decode($data['contract_extra_data'], true);
+            $data['contract_extra_data'] = is_array($decoded) ? $decoded : null;
+        }
+
+        if (empty($data['contract_type_id'])) {
+            $data['contract_type_id'] = null;
+            $data['contract_extra_data'] = null;
+        }
+
+        return $data;
     }
 }

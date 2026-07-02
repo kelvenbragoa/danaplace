@@ -117,6 +117,7 @@
 						<ul id="hresoruce" class="sidebar-dropdown list-unstyled collapse " data-parent="#sidebar">
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/departments">Departamentos</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/technicians">Técnicos</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/contract-types">Tipos de Contrato</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/technicianrequests">Requisições</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/absences">Ausências</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/work-schedule">Escala de Trabalho</router-link></li>

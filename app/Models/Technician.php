@@ -27,7 +27,9 @@ class Technician extends Model
         'city',
         'civil_status',
         'image',
-        'mobile_phone'
+        'mobile_phone',
+        'contract_type_id',
+        'contract_extra_data',
     ];
 
     public function department(){
@@ -36,6 +38,11 @@ class Technician extends Model
 
     public function area(){
         return $this->hasOne('App\Models\Area', 'id', 'area_id');
+    }
+
+    public function contract_type()
+    {
+        return $this->belongsTo(ContractType::class);
     }
 
     public function salaryProcessItems()
@@ -57,7 +64,8 @@ class Technician extends Model
         'salary' => 'decimal:2',
         'overtime_rate' => 'decimal:2',
         'admission_date' => 'date',
-        'date_of_birth' => 'date'
+        'date_of_birth' => 'date',
+        'contract_extra_data' => 'array',
     ];
 
     public function scopeActive($query)

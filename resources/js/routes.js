@@ -303,6 +303,11 @@ import CreateTechnician from './pages/admin/technician/CreateTechnician.vue';
 import ShowTechnician from './pages/admin/technician/ShowTechnician.vue';
 import EditTechnician from './pages/admin/technician/EditTechnician.vue';
 
+import IndexContractType from './pages/admin/contract-type/IndexContractType.vue';
+import CreateContractType from './pages/admin/contract-type/CreateContractType.vue';
+import ShowContractType from './pages/admin/contract-type/ShowContractType.vue';
+import EditContractType from './pages/admin/contract-type/EditContractType.vue';
+
 import IndexVacationPlan from './pages/admin/vacation-plans/IndexVacationPlan.vue';
 import CreateVacationPlan from './pages/admin/vacation-plans/CreateVacationPlan.vue';
 import ShowVacationPlan from './pages/admin/vacation-plans/ShowVacationPlan.vue';
@@ -1938,6 +1943,29 @@ export default [
         path: '/admin/departments/:id/edit',
         name: 'admin.department.edit',
         component: EditDepartment,
+    },
+
+
+    //contract types
+    {
+        path: '/admin/contract-types',
+        name: 'admin.contract-type.index',
+        component: IndexContractType,
+    },
+    {
+        path: '/admin/contract-types/create',
+        name: 'admin.contract-type.create',
+        component: CreateContractType,
+    },
+    {
+        path: '/admin/contract-types/:id',
+        name: 'admin.contract-type.show',
+        component: ShowContractType,
+    },
+    {
+        path: '/admin/contract-types/:id/edit',
+        name: 'admin.contract-type.edit',
+        component: EditContractType,
     },
 
 
