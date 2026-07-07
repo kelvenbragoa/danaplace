@@ -25,9 +25,9 @@ const statusLabels = {
 };
 
 const statusBadgeClass = {
-    available: 'badge-success',
-    reserved: 'badge-warning',
-    shipped: 'badge-secondary',
+    available: 'bg-success',
+    reserved: 'bg-warning',
+    shipped: 'bg-secondary',
 };
 
 const lowStockCount = () => {
@@ -167,7 +167,7 @@ onMounted(() => {
                                         <td>{{ moment(actualData.entry_date).format('DD-MM-YYYY') }}</td>
                                         <td>{{ actualData.location || '-' }}</td>
                                         <td>
-                                            <span class="badge" :class="statusBadgeClass[actualData.status] || 'badge-light'">
+                                            <span class="badge" :class="statusBadgeClass[actualData.status] || 'bg-light'">
                                                 {{ statusLabels[actualData.status] || actualData.status }}
                                             </span>
                                         </td>

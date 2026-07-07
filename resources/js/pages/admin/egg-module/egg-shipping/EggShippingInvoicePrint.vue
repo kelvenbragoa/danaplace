@@ -132,15 +132,15 @@ const lineTotal = () => {
                 Motorista: <strong>{{ shipping.driver_name }}</strong>
                 <br />
                 Matrícula: <strong>{{ shipping.vehicle_plate }}</strong>
-                <br />
+                <!-- <br />
                 Temperatura: <strong>{{ shipping.vehicle_temperature ?? '-' }} °C</strong>
                 <br />
                 Lacre: <strong>{{ shipping.seal_number || '-' }}</strong>
                 <br />
-                Certificado Sanitário: <strong>{{ shipping.health_certificate || '-' }}</strong>
+                Certificado Sanitário: <strong>{{ shipping.health_certificate || '-' }}</strong> -->
             </p>
 
-            <p style="font-size:10px">
+            <!-- <p style="font-size:10px">
                 <strong>Rastreabilidade</strong>
                 <br />
                 Código: <strong>{{ shipping.inventory?.egg?.traceability_code || '-' }}</strong>
@@ -148,7 +148,7 @@ const lineTotal = () => {
                 Galpão: <strong>{{ shipping.inventory?.house?.name || '-' }}</strong>
                 <br />
                 Quantidade estoque: <strong>{{ shipping.inventory?.quantity || '-' }}</strong>
-            </p>
+            </p> -->
 
             <p v-if="shipping.delivered_at" style="font-size:10px">
                 <strong>Entrega</strong>

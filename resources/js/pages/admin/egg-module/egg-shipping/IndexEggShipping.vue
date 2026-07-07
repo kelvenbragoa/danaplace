@@ -129,7 +129,7 @@ onMounted(() => {
                                         <td>{{ actualData.driver_name }}</td>
                                         <td>{{ actualData.vehicle_plate }}</td>
                                         <td>
-                                            <span class="badge" :class="actualData.delivered_at ? 'badge-success' : 'badge-warning'">
+                                            <span class="badge" :class="actualData.delivered_at ? 'bg-success' : 'bg-warning'">
                                                 {{ actualData.delivered_at ? 'Expedido' : 'Pendente' }}
                                             </span>
                                         </td>

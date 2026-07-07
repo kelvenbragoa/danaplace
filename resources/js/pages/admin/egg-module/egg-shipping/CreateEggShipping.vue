@@ -48,7 +48,7 @@ const getAuxiliarData = () => {
 
 const orderLabel = (order) => {
     const category = order.category?.name ? ` — ${order.category.name}` : '';
-    return `#${order.id} — ${order.customer_name}${category} (${order.quantity_dozens} dz)`;
+    return `#${order.id} — ${order.customer_name}${category} (${order.quantity_dozens})`;
 };
 
 const inventoryLabel = (item) => {
