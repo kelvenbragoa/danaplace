@@ -10,6 +10,7 @@ use App\Http\Controllers\EggManagement\EggCustomerPortalController;
 use App\Http\Controllers\EggManagement\EggClassificationController;
 use App\Http\Controllers\EggManagement\EggController;
 use App\Http\Controllers\EggManagement\EggDashboardController;
+use App\Http\Controllers\EggManagement\EggExpenseController;
 use App\Http\Controllers\EggManagement\EggInventoryController;
 use App\Http\Controllers\EggManagement\EggKpiController;
 use App\Http\Controllers\EggManagement\EggOrderController;
@@ -477,6 +478,14 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         Route::get('mortality/dashboard-stats', [MortalityController::class, 'dashboardStats'])->name('mortality.dashboard-stats');
         Route::get('mortality/by-flock/{flock}', [MortalityController::class, 'getByFlock'])->name('mortality.by-flock');
         Route::resource('mortality', MortalityController::class);
+
+        // ============================================
+        // 6b. Egg Expenses (produção avícola)
+        // ============================================
+        Route::get('egg-expenses/meta', [EggExpenseController::class, 'meta'])->name('egg-expenses.meta');
+        Route::get('egg-expenses/summary', [EggExpenseController::class, 'summary'])->name('egg-expenses.summary');
+        Route::get('egg-expenses/dashboard', [EggExpenseController::class, 'dashboard'])->name('egg-expenses.dashboard');
+        Route::resource('egg-expenses', EggExpenseController::class);
     
         // ============================================
         // 7. Vaccine Management

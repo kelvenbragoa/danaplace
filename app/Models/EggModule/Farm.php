@@ -26,4 +26,9 @@ class Farm extends Model
     {
         return $this->hasMany(House::class);
     }
+
+    public function expenses()
+    {
+        return $this->hasMany(EggExpense::class);
+    }
 }

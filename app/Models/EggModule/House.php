@@ -36,4 +36,9 @@ class House extends Model
     {
         return $this->hasMany(EggInventory::class);
     }
+
+    public function expenses()
+    {
+        return $this->hasMany(EggExpense::class);
+    }
 }

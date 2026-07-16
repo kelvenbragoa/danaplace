@@ -61,6 +61,11 @@ class Flock extends Model
         return $this->hasMany(Egg::class);
     }
 
+    public function expenses()
+    {
+        return $this->hasMany(EggExpense::class);
+    }
+
     // Accessors
     public function getAgeDaysAttribute()
     {

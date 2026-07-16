@@ -360,6 +360,12 @@ import CreateVaccines from './pages/admin/egg-module/vaccines/CreateVaccines.vue
 import ShowVaccines from './pages/admin/egg-module/vaccines/ShowVaccines.vue';
 import EditVaccines from './pages/admin/egg-module/vaccines/EditVaccines.vue';
 
+import IndexEggExpenses from './pages/admin/egg-module/egg-expenses/IndexEggExpenses.vue';
+import CreateEggExpenses from './pages/admin/egg-module/egg-expenses/CreateEggExpenses.vue';
+import ShowEggExpenses from './pages/admin/egg-module/egg-expenses/ShowEggExpenses.vue';
+import EditEggExpenses from './pages/admin/egg-module/egg-expenses/EditEggExpenses.vue';
+import DashboardEggExpenses from './pages/admin/egg-module/egg-expenses/DashboardEggExpenses.vue';
+
 import IndexEggClassifications from './pages/admin/egg-module/egg-classifications/IndexEggClassifications.vue';
 import CreateEggClassifications from './pages/admin/egg-module/egg-classifications/CreateEggClassifications.vue';
 import ShowEggClassifications from './pages/admin/egg-module/egg-classifications/ShowEggClassifications.vue';
@@ -2187,6 +2193,33 @@ export default [
         path: '/admin/vacinas/:id/edit',
         name: 'admin.vacinas.edit',
         component: EditVaccines,
+    },
+
+    //despesas de ovos (produção avícola)
+    {
+        path: '/admin/despesas-ovos',
+        name: 'admin.despesas-ovos.index',
+        component: IndexEggExpenses,
+    },
+    {
+        path: '/admin/despesas-ovos/create',
+        name: 'admin.despesas-ovos.create',
+        component: CreateEggExpenses,
+    },
+    {
+        path: '/admin/despesas-ovos/dashboard',
+        name: 'admin.despesas-ovos.dashboard',
+        component: DashboardEggExpenses,
+    },
+    {
+        path: '/admin/despesas-ovos/:id',
+        name: 'admin.despesas-ovos.show',
+        component: ShowEggExpenses,
+    },
+    {
+        path: '/admin/despesas-ovos/:id/edit',
+        name: 'admin.despesas-ovos.edit',
+        component: EditEggExpenses,
     },
 
     //classificação de ovos (produção avícola)

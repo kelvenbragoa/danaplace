@@ -63,7 +63,7 @@ class Technician extends Model
     protected $casts = [
         'salary' => 'decimal:2',
         'overtime_rate' => 'decimal:2',
-        'admission_date' => 'date',
+        // 'admission_date' => 'date',
         'date_of_birth' => 'date',
         'contract_extra_data' => 'array',
     ];

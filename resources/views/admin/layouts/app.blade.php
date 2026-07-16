@@ -230,6 +230,7 @@
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/linhagens">Linhagens</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/producao-diaria">Produção Diária</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/mortalidade">Mortalidade</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/despesas-ovos">Despesas</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/calendario-vacinal">Calendário Vacinal</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/classificacao-ovos">Classificação de Ovos</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/ovos">Ovos</router-link></li>
@@ -256,6 +257,7 @@
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/curva-postura">Curva de Postura</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/ranking-galpoes">Ranking de Galpões</router-link></li>
 							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/custo-duzia">Custo por Dúzia</router-link></li>
+							<li class="sidebar-item"><router-link class="sidebar-link" to="/admin/despesas-ovos/dashboard">Dashboard Despesas</router-link></li>
 						</ul>
 					</li>
 
