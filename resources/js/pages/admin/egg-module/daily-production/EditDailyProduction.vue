@@ -73,6 +73,15 @@ const updatePreview = (values) => {
     };
 };
 
+const applyFlockDefaults = (flockId) => {
+    const flock = flocks.value.find((item) => String(item.id) === String(flockId));
+    if (!flock) return;
+
+    retrievedData.value.feed_consumption_kg = Number(flock.daily_feed_consumption_kg || 0);
+    retrievedData.value.water_consumption_liters = Number(flock.daily_water_consumption_liters || 0);
+    retrievedData.value.light_hours = Number(flock.daily_light_hours || 0);
+};
+
 const editFunction = (values, actions) => {
     loadingButtonSubmit.value = true;
 
@@ -125,7 +134,7 @@ onMounted(() => {
                             <div class="row">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="flock_id">Lote</label>
-                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.flock_id}" name="flock_id" id="flock_id" v-model="retrievedData.flock_id">
+                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.flock_id}" name="flock_id" id="flock_id" v-model="retrievedData.flock_id" @change="applyFlockDefaults($event.target.value)">
                                         <option value="" disabled>Selecionar lote</option>
                                         <option v-for="flock in flocks" :key="flock.id" :value="flock.id">
                                             {{ flock.code }} - {{ flock.house?.name }}
@@ -170,6 +179,9 @@ onMounted(() => {
                             </div>
 
                             <div class="row">
+                                <div class="mb-3 col-md-12">
+                                    <p class="text-muted mb-2">Ao alterar o lote, os consumos são actualizados com os valores diários do lote.</p>
+                                </div>
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="feed_consumption_kg">Ração (kg)</label>
                                     <Field type="number" step="0.01" class="form-control" :class="{'is-invalid': errors.feed_consumption_kg}" name="feed_consumption_kg" v-model="retrievedData.feed_consumption_kg" id="feed_consumption_kg" min="0"/>

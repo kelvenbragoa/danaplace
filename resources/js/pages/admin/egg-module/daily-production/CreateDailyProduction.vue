@@ -66,6 +66,15 @@ const updatePreview = (values) => {
     };
 };
 
+const applyFlockDefaults = (flockId, setFieldValue) => {
+    const flock = flocks.value.find((item) => String(item.id) === String(flockId));
+    if (!flock || !setFieldValue) return;
+
+    setFieldValue('feed_consumption_kg', Number(flock.daily_feed_consumption_kg || 0));
+    setFieldValue('water_consumption_liters', Number(flock.daily_water_consumption_liters || 0));
+    setFieldValue('light_hours', Number(flock.daily_light_hours || 0));
+};
+
 const createRecordFunction = (values, actions) => {
     loading.value = true;
 
@@ -115,11 +124,11 @@ onMounted(() => {
                     </div>
 
                     <div class="card-body">
-                        <Form @submit="createRecordFunction" :validation-schema="schema" v-slot="{ errors, values }" :initial-values="{ date: today, cracked_eggs: 0, dirty_eggs: 0, deformed_eggs: 0, feed_consumption_kg: 0, water_consumption_liters: 0, light_hours: 0 }" @change="updatePreview(values)">
+                        <Form @submit="createRecordFunction" :validation-schema="schema" v-slot="{ errors, values, setFieldValue }" :initial-values="{ date: today, cracked_eggs: 0, dirty_eggs: 0, deformed_eggs: 0, feed_consumption_kg: 0, water_consumption_liters: 0, light_hours: 0 }" @change="updatePreview(values)">
                             <div class="row">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="flock_id">Lote</label>
-                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.flock_id}" name="flock_id" id="flock_id">
+                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.flock_id}" name="flock_id" id="flock_id" @change="applyFlockDefaults($event.target.value, setFieldValue)">
                                         <option value="" disabled>Selecionar lote</option>
                                         <option v-for="flock in flocks" :key="flock.id" :value="flock.id">
                                             {{ flock.code }} - {{ flock.house?.name }}
@@ -164,6 +173,9 @@ onMounted(() => {
                             </div>
 
                             <div class="row">
+                                <div class="mb-3 col-md-12">
+                                    <p class="text-muted mb-2">Consumos preenchidos automaticamente a partir do lote seleccionado.</p>
+                                </div>
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="feed_consumption_kg">Ração (kg)</label>
                                     <Field type="number" step="0.01" class="form-control" :class="{'is-invalid': errors.feed_consumption_kg}" name="feed_consumption_kg" id="feed_consumption_kg" min="0"/>

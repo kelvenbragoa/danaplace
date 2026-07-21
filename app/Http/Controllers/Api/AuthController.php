@@ -12,6 +12,23 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    private function formatUserForApi(User $user): array
+    {
+        $user->loadMissing('role');
+
+        return [
+            'id' => $user->id,
+            'name' => trim(($user->firstName ?? '') . ' ' . ($user->lastName ?? '')),
+            'email' => $user->email,
+            'role' => $user->role?->name ?? 'user',
+            'avatar' => $user->avatar ?? null,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'last_login_at' => $user->last_login_at,
+            'email_verified_at' => $user->email_verified_at,
+        ];
+    }
+
     /**
      * Login do usuário
      * 
@@ -72,16 +89,7 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Login realizado com sucesso',
                 'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'role' => $user->role ?? 'user',
-                        'avatar' => $user->avatar ?? null,
-                        'created_at' => $user->created_at,
-                        'last_login_at' => $user->last_login_at,
-                        // Adicione outros campos necessários
-                    ],
+                    'user' => $this->formatUserForApi($user),
                     'token' => $token,
                     'token_type' => 'Bearer',
                     'expires_at' => null // Sanctum tokens não expiram por padrão
@@ -159,25 +167,11 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user();
-            
-            // Carregar relacionamentos se necessário
-            $user->load(['roles', 'permissions']);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'role' => $user->role ?? 'user',
-                        'avatar' => $user->avatar ?? null,
-                        'created_at' => $user->created_at,
-                        'updated_at' => $user->updated_at,
-                        'last_login_at' => $user->last_login_at,
-                        'email_verified_at' => $user->email_verified_at,
-                        // Adicione outros campos necessários
-                    ]
+                    'user' => $this->formatUserForApi($user),
                 ]
             ], 200);
 
@@ -244,13 +238,7 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Perfil atualizado com sucesso',
                 'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'role' => $user->role ?? 'user',
-                        'updated_at' => $user->updated_at,
-                    ]
+                    'user' => $this->formatUserForApi($user->fresh()),
                 ]
             ], 200);
 
