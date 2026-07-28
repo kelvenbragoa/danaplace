@@ -42,6 +42,7 @@ class EggInventoryController extends Controller
     public function fifoList()
     {
         $inventory = EggInventory::where('status', 'available')
+            ->where('quantity', '>', 0)
             ->with('egg', 'egg.category')
             ->orderBy('entry_date', 'asc')
             ->get();
@@ -54,6 +55,7 @@ class EggInventoryController extends Controller
         $inventory = EggInventory::whereHas('egg', function($query) use ($categoryId) {
             $query->where('category_id', $categoryId);
         })->where('status', 'available')
+          ->where('quantity', '>', 0)
           ->with('egg')
           ->orderBy('entry_date', 'asc')
           ->get();

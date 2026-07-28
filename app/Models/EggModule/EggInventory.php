@@ -31,6 +31,11 @@ class EggInventory extends Model
     
     public function shipping()
     {
-        return $this->hasOne(EggShipping::class, 'inventory_id');
+        return $this->hasMany(EggShipping::class, 'inventory_id');
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->status === 'available' && $this->quantity > 0;
     }
 }

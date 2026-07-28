@@ -4,9 +4,11 @@ namespace App\Http\Controllers\EggManagement;
 
 use App\Http\Controllers\Controller;
 use App\Models\EggModule\EggInventory;
+use App\Models\EggModule\EggOrder;
 use App\Models\EggModule\EggShipping;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EggShippingController extends Controller
 {
@@ -120,11 +122,43 @@ class EggShippingController extends Controller
             'health_certificate' => 'nullable|string|max:100',
         ]);
 
-        $validated['responsible_id'] = auth()->id();
-        $shipping = EggShipping::create($validated);
+        try {
+            $shipping = DB::transaction(function () use ($validated) {
+                $order = EggOrder::lockForUpdate()->findOrFail($validated['order_id']);
+                $inventory = EggInventory::lockForUpdate()->findOrFail($validated['inventory_id']);
 
-        EggInventory::find($validated['inventory_id'])
-            ->update(['status' => 'reserved']);
+                // quantity_dozens no pedido = quantidade unitária de ovos (1 = 1 ovo)
+                $eggsNeeded = (int) $order->quantity_dozens;
+
+                if ($eggsNeeded < 1) {
+                    throw new \RuntimeException('O pedido não tem quantidade válida de ovos.');
+                }
+
+                if ($inventory->status !== 'available' || $inventory->quantity < 1) {
+                    throw new \RuntimeException('Este estoque não está disponível.');
+                }
+
+                if ($inventory->quantity < $eggsNeeded) {
+                    throw new \RuntimeException(
+                        "Estoque insuficiente. Necessário: {$eggsNeeded} ovos. Disponível: {$inventory->quantity}."
+                    );
+                }
+
+                $inventory->quantity -= $eggsNeeded;
+                $inventory->status = $inventory->quantity === 0 ? 'reserved' : 'available';
+                if ($inventory->quantity > 0) {
+                    $inventory->exit_date = null;
+                }
+                $inventory->save();
+
+                $validated['quantity_eggs'] = $eggsNeeded;
+                $validated['responsible_id'] = auth()->id();
+
+                return EggShipping::create($validated);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json($shipping->load('order.category', 'inventory.egg'), 201);
     }
@@ -152,7 +186,8 @@ class EggShippingController extends Controller
             'shipping_date' => $deliveredAt->toDateString(),
         ]);
 
-        if ($eggShipping->inventory) {
+        // Só marca o lote como shipped quando já não resta quantidade
+        if ($eggShipping->inventory && $eggShipping->inventory->quantity <= 0) {
             $eggShipping->inventory->update([
                 'status' => 'shipped',
                 'exit_date' => $deliveredAt->toDateString(),
@@ -207,17 +242,29 @@ class EggShippingController extends Controller
 
     public function destroy(EggShipping $eggShipping)
     {
-        $inventory = $eggShipping->inventory;
-        if ($inventory) {
-            $inventory->update(['status' => 'available', 'exit_date' => null]);
-        }
+        DB::transaction(function () use ($eggShipping) {
+            $inventory = EggInventory::lockForUpdate()->find($eggShipping->inventory_id);
 
-        $order = $eggShipping->order;
-        if ($order && $order->status !== 'canceled') {
-            $order->update(['status' => 'picked']);
-        }
+            if ($inventory) {
+                $eggsToRestore = $eggShipping->quantity_eggs
+                    ?? (int) ($eggShipping->order?->quantity_dozens ?? 0);
 
-        $eggShipping->delete();
+                if ($eggsToRestore > 0) {
+                    $inventory->quantity += $eggsToRestore;
+                }
+
+                $inventory->status = 'available';
+                $inventory->exit_date = null;
+                $inventory->save();
+            }
+
+            $order = $eggShipping->order;
+            if ($order && $order->status !== 'canceled') {
+                $order->update(['status' => 'picked']);
+            }
+
+            $eggShipping->delete();
+        });
 
         return response()->json(['message' => 'Shipping record deleted successfully']);
     }

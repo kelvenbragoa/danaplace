@@ -159,11 +159,12 @@ onMounted(() => {
                                 <h6>Pedido</h6>
                                 <p><strong>Cliente:</strong> {{ retrievedData.order?.customer_name || '-' }}</p>
                                 <p><strong>Categoria:</strong> {{ retrievedData.order?.category?.name || '-' }}</p>
-                                <p><strong>Dúzias:</strong> {{ retrievedData.order?.quantity_dozens || '-' }}</p>
+                                <p><strong>Quantidade (pedido):</strong> {{ retrievedData.order?.quantity_dozens || '-' }}</p>
 
                                 <h6 class="mt-3">Estoque</h6>
                                 <p><strong>Rastreio:</strong> {{ retrievedData.inventory?.egg?.traceability_code || '-' }}</p>
-                                <p><strong>Quantidade:</strong> {{ retrievedData.inventory?.quantity || '-' }}</p>
+                                <p><strong>Ovos expedidos:</strong> {{ retrievedData.quantity_eggs || retrievedData.order?.quantity_dozens || '-' }}</p>
+                                <p><strong>Stock restante neste lote:</strong> {{ retrievedData.inventory?.quantity ?? '-' }}</p>
                                 <p><strong>Galpão:</strong> {{ retrievedData.inventory?.house?.name || '-' }}</p>
                             </div>
                         </div>

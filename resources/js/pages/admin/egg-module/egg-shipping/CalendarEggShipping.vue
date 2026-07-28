@@ -144,7 +144,7 @@ const goToDetail = () => {
                                 <h6>Pedido</h6>
                                 <p><strong>Cliente:</strong> {{ shipping.order?.customer_name || '—' }}</p>
                                 <p><strong>Categoria:</strong> {{ shipping.order?.category?.name || '—' }}</p>
-                                <p><strong>Dúzias:</strong> {{ shipping.order?.quantity_dozens || '—' }}</p>
+                                <p><strong>Quantidade:</strong> {{ shipping.order?.quantity_dozens || '—' }}</p>
                                 <p><strong>Responsável:</strong> {{ shipping.responsible?.name || '—' }}</p>
                             </div>
                         </div>

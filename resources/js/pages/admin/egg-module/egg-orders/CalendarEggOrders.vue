@@ -166,7 +166,7 @@ const formatTotal = () => {
                                 <p><strong>Data do pedido:</strong> {{ order.order_date ? moment(order.order_date).format('DD-MM-YYYY') : '—' }}</p>
                                 <p><strong>Entrega prevista:</strong> {{ order.expected_delivery_date ? moment(order.expected_delivery_date).format('DD-MM-YYYY') : '—' }}</p>
                                 <p><strong>Categoria:</strong> {{ order.category?.name || '—' }}</p>
-                                <p><strong>Dúzias:</strong> {{ order.quantity_dozens || '—' }}</p>
+                                <p><strong>Quantidade:</strong> {{ order.quantity_dozens || '—' }}</p>
                                 <p><strong>Total:</strong> {{ formatTotal() }}</p>
                                 <p>
                                     <strong>Estado:</strong>

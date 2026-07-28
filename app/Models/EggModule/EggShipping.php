@@ -12,7 +12,7 @@ class EggShipping extends Model
     // protected $table = 'egg_shipping';
     
     protected $fillable = [
-        'order_id', 'inventory_id', 'shipping_date', 'invoice_number', 
+        'order_id', 'inventory_id', 'quantity_eggs', 'shipping_date', 'invoice_number', 
         'carrier', 'vehicle_plate', 'driver_name', 'vehicle_temperature', 
         'seal_number', 'health_certificate', 'delivery_note_number',
         'delivered_to', 'delivered_at', 'responsible_id'

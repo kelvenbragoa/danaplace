@@ -14,6 +14,8 @@ const toastr = useToastr();
 const router = useRouter();
 const orders = ref([]);
 const inventory = ref([]);
+const selectedOrderId = ref('');
+const selectedInventoryId = ref('');
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -32,6 +34,29 @@ const schema = yup.object({
 
 const shippableOrders = computed(() => orders.value.filter(order => order.status === 'picked'));
 
+const selectedOrder = computed(() =>
+    orders.value.find(o => String(o.id) === String(selectedOrderId.value))
+);
+
+const selectedInventory = computed(() =>
+    inventory.value.find(i => String(i.id) === String(selectedInventoryId.value))
+);
+
+const eggsNeeded = computed(() => {
+    if (!selectedOrder.value) return 0;
+    return Number(selectedOrder.value.quantity_dozens || 0);
+});
+
+const stockRemainingAfter = computed(() => {
+    if (!selectedInventory.value) return null;
+    return selectedInventory.value.quantity - eggsNeeded.value;
+});
+
+const stockInsufficient = computed(() => {
+    return selectedInventory.value && eggsNeeded.value > 0
+        && selectedInventory.value.quantity < eggsNeeded.value;
+});
+
 const getAuxiliarData = () => {
     Promise.all([
         axios.get('/admin/egg-orders/pending-orders'),
@@ -48,16 +73,21 @@ const getAuxiliarData = () => {
 
 const orderLabel = (order) => {
     const category = order.category?.name ? ` — ${order.category.name}` : '';
-    return `#${order.id} — ${order.customer_name}${category} (${order.quantity_dozens})`;
+    return `#${order.id} — ${order.customer_name}${category} (${order.quantity_dozens} ovos)`;
 };
 
 const inventoryLabel = (item) => {
     const trace = item.egg?.traceability_code || 'Sem rastreio';
     const category = item.egg?.category?.name ? ` — ${item.egg.category.name}` : '';
-    return `#${item.id} — ${trace}${category} — ${item.quantity} un.`;
+    return `#${item.id} — ${trace}${category} — ${item.quantity} ovos disponíveis`;
 };
 
 const createRecordFunction = (values, actions) => {
+    if (stockInsufficient.value) {
+        toastr.error('Estoque insuficiente para este pedido.');
+        return;
+    }
+
     loading.value = true;
 
     const payload = {
@@ -68,7 +98,7 @@ const createRecordFunction = (values, actions) => {
     axios.post('/admin/egg-shipping', payload).then(() => {
         actions.resetForm();
         router.push({ path: '/admin/expedicao-ovos' });
-        toastr.success('Expedição criada com sucesso');
+        toastr.success('Expedição criada. Stock reduzido pela quantidade do pedido.');
     }).catch((error) => {
         toastr.error('Erro ao adicionar. ' + (error.response?.data?.message || ''));
         if (error.response?.data?.errors) {
@@ -111,7 +141,7 @@ onMounted(() => {
                             <div class="row">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="order_id">Pedido</label>
-                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.order_id}" name="order_id" id="order_id">
+                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.order_id}" name="order_id" id="order_id" v-model="selectedOrderId">
                                         <option value="">Selecione...</option>
                                         <option v-for="order in shippableOrders" :key="order.id" :value="order.id">{{ orderLabel(order) }}</option>
                                     </Field>
@@ -119,12 +149,19 @@ onMounted(() => {
                                 </div>
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="inventory_id">Estoque</label>
-                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.inventory_id}" name="inventory_id" id="inventory_id">
+                                    <Field as="select" class="form-control" :class="{'is-invalid': errors.inventory_id || stockInsufficient}" name="inventory_id" id="inventory_id" v-model="selectedInventoryId">
                                         <option value="">Selecione...</option>
                                         <option v-for="item in inventory" :key="item.id" :value="item.id">{{ inventoryLabel(item) }}</option>
                                     </Field>
                                     <span class="invalid-feedback">{{ errors.inventory_id }}</span>
                                 </div>
+                            </div>
+
+                            <div v-if="selectedOrder && selectedInventory" class="alert" :class="stockInsufficient ? 'alert-danger' : 'alert-info'">
+                                <div><strong>A baixar do stock:</strong> {{ eggsNeeded }} ovos</div>
+                                <div><strong>Stock atual:</strong> {{ selectedInventory.quantity }} ovos</div>
+                                <div v-if="!stockInsufficient"><strong>Ficará disponível:</strong> {{ stockRemainingAfter }} ovos</div>
+                                <div v-else><strong>Insuficiente</strong> — escolha outro lote ou reduza o pedido.</div>
                             </div>
 
                             <div class="row">
@@ -176,7 +213,7 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" :disabled="loading || shippableOrders.length === 0 || inventory.length === 0">
+                            <button type="submit" class="btn btn-primary" :disabled="loading || shippableOrders.length === 0 || inventory.length === 0 || stockInsufficient">
                                 <div v-if="loading" class="spinner-border spinner-border-sm" role="status"></div>
                                 <span v-else>Submeter</span>
                             </button>
