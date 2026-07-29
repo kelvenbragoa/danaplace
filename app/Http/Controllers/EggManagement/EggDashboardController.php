@@ -86,7 +86,7 @@ class EggDashboardController extends Controller
 
     public function financialStats(Request $request)
     {
-        $startDate = $request->get('start_date', Carbon::now()->subMonth());
+        $startDate = $request->get('start_date', Carbon::now()->startOfMonth());
         $endDate = $request->get('end_date', Carbon::now());
         
         $orders = EggOrder::whereBetween('order_date', [$startDate, $endDate])
