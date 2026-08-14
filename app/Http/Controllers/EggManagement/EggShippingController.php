@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EggModule\EggInventory;
 use App\Models\EggModule\EggOrder;
 use App\Models\EggModule\EggShipping;
+use App\Models\EggModule\EggShippingItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ class EggShippingController extends Controller
     {
         $searchQuery = $request->query('query');
 
-        $query = EggShipping::with('order.category', 'inventory.egg', 'responsible')
+        $query = EggShipping::with('order.category', 'inventory.egg', 'items.inventory.egg', 'responsible')
             ->when($searchQuery, function ($q, $searchQuery) {
                 $q->where(function ($sub) use ($searchQuery) {
                     $sub->where('invoice_number', 'like', "%{$searchQuery}%")
@@ -103,6 +104,8 @@ class EggShippingController extends Controller
             'order.category',
             'inventory.egg.category',
             'inventory.house',
+            'items.inventory.egg.category',
+            'items.inventory.house',
             'responsible'
         ));
     }
@@ -111,7 +114,6 @@ class EggShippingController extends Controller
     {
         $validated = $request->validate([
             'order_id' => 'required|exists:egg_orders,id',
-            'inventory_id' => 'required|exists:egg_inventories,id',
             'shipping_date' => 'required|date',
             'invoice_number' => 'required|string|max:50|unique:egg_shippings,invoice_number',
             'carrier' => 'required|string|max:100',
@@ -120,47 +122,106 @@ class EggShippingController extends Controller
             'vehicle_temperature' => 'nullable|numeric',
             'seal_number' => 'nullable|string|max:50',
             'health_certificate' => 'nullable|string|max:100',
+            // Compat: um único stock OU vários allocations
+            'inventory_id' => 'nullable|exists:egg_inventories,id',
+            'allocations' => 'nullable|array|min:1',
+            'allocations.*.inventory_id' => 'required_with:allocations|exists:egg_inventories,id',
+            'allocations.*.quantity' => 'required_with:allocations|integer|min:1',
         ]);
 
         try {
             $shipping = DB::transaction(function () use ($validated) {
                 $order = EggOrder::lockForUpdate()->findOrFail($validated['order_id']);
-                $inventory = EggInventory::lockForUpdate()->findOrFail($validated['inventory_id']);
-
-                // quantity_dozens no pedido = quantidade unitária de ovos (1 = 1 ovo)
                 $eggsNeeded = (int) $order->quantity_dozens;
 
                 if ($eggsNeeded < 1) {
                     throw new \RuntimeException('O pedido não tem quantidade válida de ovos.');
                 }
 
-                if ($inventory->status !== 'available' || $inventory->quantity < 1) {
-                    throw new \RuntimeException('Este estoque não está disponível.');
-                }
+                $allocations = $this->normalizeAllocations($validated, $eggsNeeded);
 
-                if ($inventory->quantity < $eggsNeeded) {
+                $allocatedTotal = collect($allocations)->sum('quantity');
+                if ($allocatedTotal !== $eggsNeeded) {
                     throw new \RuntimeException(
-                        "Estoque insuficiente. Necessário: {$eggsNeeded} ovos. Disponível: {$inventory->quantity}."
+                        "A soma das quantidades dos stocks ({$allocatedTotal}) deve ser igual ao pedido ({$eggsNeeded} ovos)."
                     );
                 }
 
-                $inventory->quantity -= $eggsNeeded;
-                $inventory->status = $inventory->quantity === 0 ? 'reserved' : 'available';
-                if ($inventory->quantity > 0) {
-                    $inventory->exit_date = null;
+                $inventoryIds = collect($allocations)->pluck('inventory_id')->unique();
+                if ($inventoryIds->count() !== count($allocations)) {
+                    throw new \RuntimeException('Não pode usar o mesmo stock mais do que uma vez na mesma expedição.');
                 }
-                $inventory->save();
 
-                $validated['quantity_eggs'] = $eggsNeeded;
-                $validated['responsible_id'] = auth()->id();
+                foreach ($allocations as $allocation) {
+                    $inventory = EggInventory::lockForUpdate()->findOrFail($allocation['inventory_id']);
 
-                return EggShipping::create($validated);
+                    if ($inventory->status !== 'available' || $inventory->quantity < 1) {
+                        throw new \RuntimeException("O stock #{$inventory->id} não está disponível.");
+                    }
+
+                    if ($inventory->quantity < $allocation['quantity']) {
+                        throw new \RuntimeException(
+                            "Stock #{$inventory->id} insuficiente. Necessário: {$allocation['quantity']}. Disponível: {$inventory->quantity}."
+                        );
+                    }
+
+                    $inventory->quantity -= $allocation['quantity'];
+                    $inventory->status = $inventory->quantity === 0 ? 'reserved' : 'available';
+                    if ($inventory->quantity > 0) {
+                        $inventory->exit_date = null;
+                    }
+                    $inventory->save();
+                }
+
+                $shippingData = collect($validated)->except(['allocations', 'inventory_id'])->all();
+                $shippingData['inventory_id'] = $allocations[0]['inventory_id']; // principal (compat)
+                $shippingData['quantity_eggs'] = $eggsNeeded;
+                $shippingData['responsible_id'] = auth()->id();
+
+                $shipping = EggShipping::create($shippingData);
+
+                foreach ($allocations as $allocation) {
+                    EggShippingItem::create([
+                        'egg_shipping_id' => $shipping->id,
+                        'inventory_id' => $allocation['inventory_id'],
+                        'quantity' => $allocation['quantity'],
+                    ]);
+                }
+
+                return $shipping;
             });
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        return response()->json($shipping->load('order.category', 'inventory.egg'), 201);
+        return response()->json(
+            $shipping->load('order.category', 'inventory.egg', 'items.inventory.egg'),
+            201
+        );
+    }
+
+    /**
+     * Aceita allocations[] ou um único inventory_id (compat).
+     */
+    private function normalizeAllocations(array $validated, int $eggsNeeded): array
+    {
+        if (!empty($validated['allocations'])) {
+            return array_map(function ($row) {
+                return [
+                    'inventory_id' => (int) $row['inventory_id'],
+                    'quantity' => (int) $row['quantity'],
+                ];
+            }, $validated['allocations']);
+        }
+
+        if (!empty($validated['inventory_id'])) {
+            return [[
+                'inventory_id' => (int) $validated['inventory_id'],
+                'quantity' => $eggsNeeded,
+            ]];
+        }
+
+        throw new \RuntimeException('Selecione pelo menos um stock para a expedição.');
     }
 
     public function dispatch(Request $request, EggShipping $eggShipping)
@@ -186,19 +247,30 @@ class EggShippingController extends Controller
             'shipping_date' => $deliveredAt->toDateString(),
         ]);
 
-        // Só marca o lote como shipped quando já não resta quantidade
-        if ($eggShipping->inventory && $eggShipping->inventory->quantity <= 0) {
-            $eggShipping->inventory->update([
-                'status' => 'shipped',
-                'exit_date' => $deliveredAt->toDateString(),
-            ]);
+        $eggShipping->load('items.inventory', 'inventory');
+
+        $inventories = $eggShipping->items->isNotEmpty()
+            ? $eggShipping->items->pluck('inventory')->filter()
+            : collect([$eggShipping->inventory])->filter();
+
+        foreach ($inventories as $inventory) {
+            if ($inventory->quantity <= 0) {
+                $inventory->update([
+                    'status' => 'shipped',
+                    'exit_date' => $deliveredAt->toDateString(),
+                ]);
+            }
         }
 
         if ($eggShipping->order) {
             $eggShipping->order->update(['status' => 'shipped']);
         }
 
-        return response()->json($eggShipping->load('order.category', 'inventory.egg'));
+        return response()->json($eggShipping->load(
+            'order.category',
+            'inventory.egg',
+            'items.inventory.egg'
+        ));
     }
 
     public function validateTemperature(Request $request)
@@ -237,25 +309,40 @@ class EggShippingController extends Controller
 
         $eggShipping->update($validated);
 
-        return response()->json($eggShipping->load('order.category', 'inventory.egg'));
+        return response()->json($eggShipping->load('order.category', 'inventory.egg', 'items.inventory.egg'));
     }
 
     public function destroy(EggShipping $eggShipping)
     {
         DB::transaction(function () use ($eggShipping) {
-            $inventory = EggInventory::lockForUpdate()->find($eggShipping->inventory_id);
+            $eggShipping->load(['items', 'order']);
 
-            if ($inventory) {
-                $eggsToRestore = $eggShipping->quantity_eggs
-                    ?? (int) ($eggShipping->order?->quantity_dozens ?? 0);
+            if ($eggShipping->items->isNotEmpty()) {
+                foreach ($eggShipping->items as $item) {
+                    $inventory = EggInventory::lockForUpdate()->find($item->inventory_id);
+                    if (!$inventory) {
+                        continue;
+                    }
 
-                if ($eggsToRestore > 0) {
-                    $inventory->quantity += $eggsToRestore;
+                    $inventory->quantity += (int) $item->quantity;
+                    $inventory->status = 'available';
+                    $inventory->exit_date = null;
+                    $inventory->save();
                 }
+            } elseif ($eggShipping->inventory_id) {
+                $inventory = EggInventory::lockForUpdate()->find($eggShipping->inventory_id);
+                if ($inventory) {
+                    $eggsToRestore = $eggShipping->quantity_eggs
+                        ?? (int) ($eggShipping->order?->quantity_dozens ?? 0);
 
-                $inventory->status = 'available';
-                $inventory->exit_date = null;
-                $inventory->save();
+                    if ($eggsToRestore > 0) {
+                        $inventory->quantity += $eggsToRestore;
+                    }
+
+                    $inventory->status = 'available';
+                    $inventory->exit_date = null;
+                    $inventory->save();
+                }
             }
 
             $order = $eggShipping->order;
@@ -263,6 +350,7 @@ class EggShippingController extends Controller
                 $order->update(['status' => 'picked']);
             }
 
+            $eggShipping->items()->delete();
             $eggShipping->delete();
         });
 
@@ -272,7 +360,13 @@ class EggShippingController extends Controller
     public function printInvoice(EggShipping $eggShipping)
     {
         $invoice = [
-            'shipping' => $eggShipping->load('order', 'order.category', 'responsible', 'inventory.egg'),
+            'shipping' => $eggShipping->load(
+                'order',
+                'order.category',
+                'responsible',
+                'inventory.egg',
+                'items.inventory.egg'
+            ),
             'company' => [
                 'name' => 'M+D - InoGest',
                 'tax_id' => '123456789',

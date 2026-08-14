@@ -161,11 +161,36 @@ onMounted(() => {
                                 <p><strong>Categoria:</strong> {{ retrievedData.order?.category?.name || '-' }}</p>
                                 <p><strong>Quantidade (pedido):</strong> {{ retrievedData.order?.quantity_dozens || '-' }}</p>
 
-                                <h6 class="mt-3">Estoque</h6>
-                                <p><strong>Rastreio:</strong> {{ retrievedData.inventory?.egg?.traceability_code || '-' }}</p>
-                                <p><strong>Ovos expedidos:</strong> {{ retrievedData.quantity_eggs || retrievedData.order?.quantity_dozens || '-' }}</p>
-                                <p><strong>Stock restante neste lote:</strong> {{ retrievedData.inventory?.quantity ?? '-' }}</p>
-                                <p><strong>Galpão:</strong> {{ retrievedData.inventory?.house?.name || '-' }}</p>
+                                <h6 class="mt-3">Stocks utilizados</h6>
+                                <p><strong>Total expedido:</strong> {{ retrievedData.quantity_eggs || retrievedData.order?.quantity_dozens || '-' }}</p>
+
+                                <div class="table-responsive" v-if="retrievedData.items?.length">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Lote</th>
+                                                <th>Rastreio</th>
+                                                <th>Galpão</th>
+                                                <th>Qtd</th>
+                                                <th>Restante</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item in retrievedData.items" :key="item.id">
+                                                <td>#{{ item.inventory_id }}</td>
+                                                <td>{{ item.inventory?.egg?.traceability_code || '-' }}</td>
+                                                <td>{{ item.inventory?.house?.name || '-' }}</td>
+                                                <td>{{ item.quantity }}</td>
+                                                <td>{{ item.inventory?.quantity ?? '-' }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div v-else>
+                                    <p><strong>Rastreio:</strong> {{ retrievedData.inventory?.egg?.traceability_code || '-' }}</p>
+                                    <p><strong>Stock restante neste lote:</strong> {{ retrievedData.inventory?.quantity ?? '-' }}</p>
+                                    <p><strong>Galpão:</strong> {{ retrievedData.inventory?.house?.name || '-' }}</p>
+                                </div>
                             </div>
                         </div>
 

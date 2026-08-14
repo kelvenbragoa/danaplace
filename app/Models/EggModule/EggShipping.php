@@ -33,6 +33,11 @@ class EggShipping extends Model
         return $this->belongsTo(EggInventory::class, 'inventory_id');
     }
 
+    public function items()
+    {
+        return $this->hasMany(EggShippingItem::class, 'egg_shipping_id');
+    }
+
     public function responsible()
     {
         return $this->belongsTo(User::class, 'responsible_id');
