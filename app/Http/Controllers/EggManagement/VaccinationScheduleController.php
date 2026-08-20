@@ -106,6 +106,25 @@ class VaccinationScheduleController extends Controller
         return response()->json($vaccinationSchedule->load('flock.house', 'vaccine', 'responsible'));
     }
 
+    public function copy(VaccineSchedule $vaccinationSchedule)
+    {
+        $copy = $vaccinationSchedule->replicate([
+            'application_date',
+            'responsible_id',
+            'status',
+        ]);
+
+        $copy->status = 'pending';
+        $copy->application_date = null;
+        $copy->responsible_id = null;
+        $copy->save();
+
+        return response()->json(
+            $copy->load('flock.house', 'vaccine', 'responsible'),
+            201
+        );
+    }
+
     public function update(Request $request, VaccineSchedule $vaccinationSchedule)
     {
         $validated = $request->validate([

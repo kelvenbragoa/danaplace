@@ -119,6 +119,25 @@ const cancelVaccination = (schedule) => {
         });
 };
 
+const copyVaccination = (schedule) => {
+    loadingAction.value = `copy-${schedule.id}`;
+
+    axios.post(`/admin/vaccination-schedule/${schedule.id}/copy`)
+        .then((response) => {
+            retriviedData.value.data.unshift(response.data);
+            if (typeof retriviedData.value.total === 'number') {
+                retriviedData.value.total += 1;
+            }
+            toastr.success('Agendamento copiado. Novo registo em Pendente.');
+            getPendingToday();
+            getData(retriviedData.value.current_page || 1);
+        }).catch(() => {
+            toastr.error('Erro ao copiar agendamento');
+        }).finally(() => {
+            loadingAction.value = null;
+        });
+};
+
 watch(searchQuery, debounce(() => {
     getData();
 }, 300));
@@ -227,6 +246,10 @@ onMounted(() => {
                                         <td>
                                             <router-link :to="'/admin/calendario-vacinal/' + actualData.id + '/edit'"><vue-feather type="edit-2"></vue-feather></router-link>
                                             <router-link :to="'/admin/calendario-vacinal/' + actualData.id"><vue-feather type="eye"></vue-feather></router-link>
+                                            <a href="#" @click.prevent="copyVaccination(actualData)" title="Copiar">
+                                                <vue-feather type="copy" v-if="loadingAction !== 'copy-' + actualData.id"></vue-feather>
+                                                <span v-else class="spinner-border spinner-border-sm"></span>
+                                            </a>
                                             <a v-if="actualData.status === 'pending'" href="#" @click.prevent="applyVaccination(actualData)" title="Aplicar">
                                                 <vue-feather type="check-circle" v-if="loadingAction !== actualData.id"></vue-feather>
                                                 <span v-else class="spinner-border spinner-border-sm"></span>

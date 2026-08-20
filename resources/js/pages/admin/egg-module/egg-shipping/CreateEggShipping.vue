@@ -14,7 +14,9 @@ const toastr = useToastr();
 const router = useRouter();
 const orders = ref([]);
 const inventory = ref([]);
+const categories = ref([]);
 const selectedOrderId = ref('');
+const autoCategoryId = ref('');
 const allocations = ref([{ inventory_id: '', quantity: '' }]);
 
 const today = new Date().toISOString().split('T')[0];
@@ -74,13 +76,43 @@ const availableOptionsFor = (rowIndex) => {
 
 const stockFor = (inventoryId) => inventory.value.find(i => String(i.id) === String(inventoryId));
 
+const categoriesForAuto = computed(() => {
+    const fromInventory = inventory.value
+        .map(item => item.egg?.category)
+        .filter(Boolean);
+
+    const map = new Map();
+    fromInventory.forEach((cat) => {
+        if (!map.has(cat.id)) {
+            map.set(cat.id, cat);
+        }
+    });
+    categories.value.forEach((cat) => {
+        if (!map.has(cat.id)) {
+            map.set(cat.id, cat);
+        }
+    });
+
+    return Array.from(map.values()).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+});
+
+const inventoryByAutoCategory = computed(() => {
+    if (!autoCategoryId.value) return [];
+    return inventory.value.filter(item =>
+        String(item.egg?.category_id) === String(autoCategoryId.value)
+        || String(item.egg?.category?.id) === String(autoCategoryId.value)
+    );
+});
+
 const getAuxiliarData = () => {
     Promise.all([
         axios.get('/admin/egg-orders/pending-orders'),
         axios.get('/admin/egg-inventory/fifo-list'),
-    ]).then(([ordersResponse, inventoryResponse]) => {
+        axios.get('/admin/egg-categories-all'),
+    ]).then(([ordersResponse, inventoryResponse, categoriesResponse]) => {
         orders.value = ordersResponse.data;
         inventory.value = inventoryResponse.data;
+        categories.value = categoriesResponse.data;
         loadingDiv.value = false;
     }).catch(() => {
         toastr.error('Erro ao carregar dados auxiliares');
@@ -111,17 +143,28 @@ const removeAllocation = (index) => {
     allocations.value.splice(index, 1);
 };
 
-/** Preenche automaticamente por FIFO (stock mais antigo primeiro). */
+/** Preenche automaticamente por FIFO, só stocks da categoria escolhida. */
 const autoAllocateFifo = () => {
     if (!eggsNeeded.value) {
         toastr.warning('Selecione um pedido primeiro');
         return;
     }
 
+    if (!autoCategoryId.value) {
+        toastr.warning('Selecione a categoria para autoalocar');
+        return;
+    }
+
+    const stocks = inventoryByAutoCategory.value;
+    if (stocks.length === 0) {
+        toastr.error('Não há stock disponível nesta categoria');
+        return;
+    }
+
     let remaining = eggsNeeded.value;
     const result = [];
 
-    for (const stock of inventory.value) {
+    for (const stock of stocks) {
         if (remaining <= 0) break;
         if (stock.quantity < 1) continue;
 
@@ -131,16 +174,22 @@ const autoAllocateFifo = () => {
     }
 
     if (remaining > 0) {
-        toastr.error(`Stock total insuficiente. Faltam ${remaining} ovos.`);
+        const categoryName = categoriesForAuto.value.find(c => String(c.id) === String(autoCategoryId.value))?.name || 'selecionada';
+        toastr.error(`Stock insuficiente na categoria "${categoryName}". Faltam ${remaining} ovos.`);
         return;
     }
 
     allocations.value = result;
-    toastr.success(`Alocado automaticamente em ${result.length} lote(s)`);
+    const categoryName = categoriesForAuto.value.find(c => String(c.id) === String(autoCategoryId.value))?.name || '';
+    toastr.success(`Alocado em ${result.length} lote(s) da categoria ${categoryName}`);
 };
 
 watch(selectedOrderId, () => {
     allocations.value = [{ inventory_id: '', quantity: eggsNeeded.value || '' }];
+    // Sugere a categoria do pedido no Auto Alocar (pode alterar)
+    autoCategoryId.value = selectedOrder.value?.category_id
+        || selectedOrder.value?.category?.id
+        || '';
 });
 
 const createRecordFunction = (values, actions) => {
@@ -214,10 +263,28 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
                                 <h6 class="mb-0">Stocks a utilizar</h6>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-outline-info me-2" @click.prevent="autoAllocateFifo" :disabled="!eggsNeeded || inventory.length === 0">
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    <select
+                                        class="form-control form-control-sm"
+                                        style="min-width: 180px;"
+                                        v-model="autoCategoryId"
+                                        :disabled="!eggsNeeded"
+                                    >
+                                        <option value="">Categoria (Auto Alocar)</option>
+                                        <option
+                                            v-for="cat in categoriesForAuto"
+                                            :key="cat.id"
+                                            :value="cat.id"
+                                        >{{ cat.name }}</option>
+                                    </select>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-info"
+                                        @click.prevent="autoAllocateFifo"
+                                        :disabled="!eggsNeeded || inventory.length === 0 || !autoCategoryId"
+                                    >
                                         Auto Alocar
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary" @click.prevent="addAllocation" :disabled="!eggsNeeded">
@@ -274,7 +341,8 @@ onMounted(() => {
                                 </div>
                                 <div class="small text-muted mt-1">
                                     Pode usar um ou vários stocks. A soma tem de ser exactamente igual ao pedido.
-                                    Use <strong>Auto FIFO</strong> para preencher pelos lotes mais antigos.
+                                    <strong>Auto Alocar</strong> usa só lotes da categoria escolhida (FIFO).
+                                    Em <strong>+ Adicionar stock</strong> pode escolher qualquer lote manualmente.
                                 </div>
                             </div>
 

@@ -447,9 +447,9 @@ onMounted(()=>{
                                                                     <br />
                                                                     Tel: +258 87 914 1774
                                                                     <br />
-                                                                    Email: info@ieareiabranca.com
+                                                                    Email: info@danaplace.co.mz
                                                                     <br />
-                                                                    www.areiabranca.com
+                                                                    www.danaplace.co.mz
                                                                 </p>
                                                             </div>
                                                             <div class="col">

@@ -453,7 +453,8 @@ class GlobalController extends Controller
             'brands'=>$brands,
             'ivas'=>$ivas,
             'unities'=>$unities,
-            'categories'=>$categories
+            'categories'=>$categories,
+            'next_code' => Product::generateNextCode(),
         ];
 
     }

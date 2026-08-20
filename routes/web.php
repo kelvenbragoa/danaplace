@@ -503,6 +503,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         Route::resource('vaccination-schedule', VaccinationScheduleController::class);
         Route::post('vaccination-schedule/{vaccination_schedule}/apply', [VaccinationScheduleController::class, 'apply'])->name('vaccination-schedule.apply');
         Route::post('vaccination-schedule/{vaccination_schedule}/cancel', [VaccinationScheduleController::class, 'cancel'])->name('vaccination-schedule.cancel');
+        Route::post('vaccination-schedule/{vaccination_schedule}/copy', [VaccinationScheduleController::class, 'copy'])->name('vaccination-schedule.copy');
     
         // ============================================
         // 9. Egg Categories
@@ -591,6 +592,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         // ============================================
         Route::prefix('egg-dashboard')->name('egg-dashboard.')->group(function () {
             Route::get('/', [EggDashboardController::class, 'index'])->name('index');
+            Route::get('overview', [EggDashboardController::class, 'overview'])->name('overview');
             Route::get('production-stats', [EggDashboardController::class, 'productionStats'])->name('production-stats');
             Route::get('mortality-stats', [EggDashboardController::class, 'mortalityStats'])->name('mortality-stats');
             Route::get('inventory-stats', [EggDashboardController::class, 'inventoryStats'])->name('inventory-stats');
