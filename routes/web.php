@@ -557,6 +557,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         // 15. Egg Orders (Sales)
         // ============================================
         Route::get('egg-orders/pending-orders', [EggOrderController::class, 'pendingOrders'])->name('egg-orders.pending');
+        Route::get('egg-orders/for-separation', [EggOrderController::class, 'forSeparation'])->name('egg-orders.for-separation');
         Route::get('egg-orders/calendar-events', [EggOrderController::class, 'calendarEvents'])->name('egg-orders.calendar');
         Route::get('egg-orders/invoice/{egg_order}', [EggOrderController::class, 'generateInvoice'])->name('egg-orders.invoice');
         Route::post('egg-orders/{egg_order}/approve', [EggOrderController::class, 'approve'])->name('egg-orders.approve');
@@ -569,6 +570,7 @@ Route::get('/auxiliar-create-requeststock/{id}', [App\Http\Controllers\GlobalCon
         // ============================================
         Route::get('egg-shipping/today-shipping', [EggShippingController::class, 'todayShipping'])->name('egg-shipping.today');
         Route::get('egg-shipping/calendar-events', [EggShippingController::class, 'calendarEvents'])->name('egg-shipping.calendar');
+        Route::get('egg-shipping/next-invoice-number', [EggShippingController::class, 'nextInvoiceNumber'])->name('egg-shipping.next-invoice-number');
         Route::get('egg-shipping/invoice/{egg_shipping}/print', [EggShippingController::class, 'printInvoice'])->name('egg-shipping.print-invoice');
         Route::post('egg-shipping/validate-temperature', [EggShippingController::class, 'validateTemperature'])->name('egg-shipping.validate-temperature');
         Route::post('egg-shipping/{egg_shipping}/dispatch', [EggShippingController::class, 'dispatch'])->name('egg-shipping.dispatch');

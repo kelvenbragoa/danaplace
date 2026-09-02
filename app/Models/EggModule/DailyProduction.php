@@ -12,9 +12,10 @@ class DailyProduction extends Model
     // protected $table = 'daily_production';
     
     protected $fillable = [
-        'flock_id', 'date', 'total_eggs', 'cracked_eggs', 'dirty_eggs', 
-        'deformed_eggs', 'clean_eggs', 'feed_consumption_kg', 
-        'water_consumption_liters', 'light_hours', 'responsible_id', 'observations'
+        'flock_id', 'date', 'total_eggs', 'cracked_eggs', 'dirty_eggs',
+        'deformed_eggs', 'clean_eggs', 'normal_eggs', 'grande_eggs', 'jumbo_eggs',
+        'feed_consumption_kg', 'water_consumption_liters', 'light_hours',
+        'responsible_id', 'observations',
     ];
 
     protected $casts = [

@@ -93,6 +93,9 @@ class DailyProductionController extends Controller
             'productions.*.cracked_eggs' => 'integer|min:0',
             'productions.*.dirty_eggs' => 'integer|min:0',
             'productions.*.deformed_eggs' => 'integer|min:0',
+            'productions.*.normal_eggs' => 'integer|min:0',
+            'productions.*.grande_eggs' => 'integer|min:0',
+            'productions.*.jumbo_eggs' => 'integer|min:0',
             'productions.*.feed_consumption_kg' => 'numeric|min:0',
             'productions.*.water_consumption_liters' => 'numeric|min:0',
             'productions.*.light_hours' => 'numeric|min:0',
@@ -136,6 +139,9 @@ class DailyProductionController extends Controller
             'dirty_eggs' => 'integer|min:0',
             'deformed_eggs' => 'integer|min:0',
             'clean_eggs' => 'integer|min:0',
+            'normal_eggs' => 'integer|min:0',
+            'grande_eggs' => 'integer|min:0',
+            'jumbo_eggs' => 'integer|min:0',
             'feed_consumption_kg' => 'numeric|min:0',
             'water_consumption_liters' => 'numeric|min:0',
             'light_hours' => 'numeric|min:0',
@@ -151,6 +157,9 @@ class DailyProductionController extends Controller
         $data['cracked_eggs'] = $data['cracked_eggs'] ?? 0;
         $data['dirty_eggs'] = $data['dirty_eggs'] ?? 0;
         $data['deformed_eggs'] = $data['deformed_eggs'] ?? 0;
+        $data['normal_eggs'] = $data['normal_eggs'] ?? 0;
+        $data['grande_eggs'] = $data['grande_eggs'] ?? 0;
+        $data['jumbo_eggs'] = $data['jumbo_eggs'] ?? 0;
         $data['feed_consumption_kg'] = $data['feed_consumption_kg'] ?? 0;
         $data['water_consumption_liters'] = $data['water_consumption_liters'] ?? 0;
         $data['light_hours'] = $data['light_hours'] ?? 0;

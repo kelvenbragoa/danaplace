@@ -13,11 +13,9 @@ const loadingDiv = ref(true);
 const toastr = useToastr();
 const router = useRouter();
 const orders = ref([]);
-const inventory = ref([]);
-const categories = ref([]);
 const selectedOrderId = ref('');
-const autoCategoryId = ref('');
-const allocations = ref([{ inventory_id: '', quantity: '' }]);
+const selectedOrder = ref(null);
+const generatedInvoiceNumber = ref('');
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -33,86 +31,29 @@ const schema = yup.object({
     health_certificate: yup.string().nullable(),
 });
 
-const shippableOrders = computed(() => orders.value.filter(order => order.status === 'picked'));
-
-const selectedOrder = computed(() =>
-    orders.value.find(o => String(o.id) === String(selectedOrderId.value))
+const shippableOrders = computed(() =>
+    orders.value.filter(order => order.status === 'picked' && !order.shipping)
 );
 
-const eggsNeeded = computed(() => {
-    if (!selectedOrder.value) return 0;
-    return Number(selectedOrder.value.quantity_dozens || 0);
-});
+const reservedItems = computed(() => selectedOrder.value?.items || []);
 
-const allocatedTotal = computed(() =>
-    allocations.value.reduce((sum, row) => sum + (Number(row.quantity) || 0), 0)
+const reservedTotal = computed(() =>
+    reservedItems.value.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
 );
 
-const remainingToAllocate = computed(() => eggsNeeded.value - allocatedTotal.value);
-
-const allocationValid = computed(() => {
-    if (!eggsNeeded.value) return false;
-    if (allocations.value.length < 1) return false;
-    if (allocatedTotal.value !== eggsNeeded.value) return false;
-
-    const ids = allocations.value.map(a => String(a.inventory_id)).filter(Boolean);
-    if (ids.length !== allocations.value.length) return false;
-    if (new Set(ids).size !== ids.length) return false;
-
-    return allocations.value.every((row) => {
-        const stock = inventory.value.find(i => String(i.id) === String(row.inventory_id));
-        const qty = Number(row.quantity) || 0;
-        return stock && qty > 0 && qty <= stock.quantity;
-    });
-});
-
-const availableOptionsFor = (rowIndex) => {
-    const usedElsewhere = allocations.value
-        .map((row, idx) => (idx !== rowIndex ? String(row.inventory_id) : null))
-        .filter(Boolean);
-
-    return inventory.value.filter(item => !usedElsewhere.includes(String(item.id)));
-};
-
-const stockFor = (inventoryId) => inventory.value.find(i => String(i.id) === String(inventoryId));
-
-const categoriesForAuto = computed(() => {
-    const fromInventory = inventory.value
-        .map(item => item.egg?.category)
-        .filter(Boolean);
-
-    const map = new Map();
-    fromInventory.forEach((cat) => {
-        if (!map.has(cat.id)) {
-            map.set(cat.id, cat);
-        }
-    });
-    categories.value.forEach((cat) => {
-        if (!map.has(cat.id)) {
-            map.set(cat.id, cat);
-        }
-    });
-
-    return Array.from(map.values()).sort((a, b) => String(a.name).localeCompare(String(b.name)));
-});
-
-const inventoryByAutoCategory = computed(() => {
-    if (!autoCategoryId.value) return [];
-    return inventory.value.filter(item =>
-        String(item.egg?.category_id) === String(autoCategoryId.value)
-        || String(item.egg?.category?.id) === String(autoCategoryId.value)
-    );
+const canSubmit = computed(() => {
+    if (!selectedOrderId.value || !selectedOrder.value) return false;
+    if (reservedItems.value.length === 0) return false;
+    return reservedTotal.value === Number(selectedOrder.value.quantity_dozens || 0);
 });
 
 const getAuxiliarData = () => {
     Promise.all([
         axios.get('/admin/egg-orders/pending-orders'),
-        axios.get('/admin/egg-inventory/fifo-list'),
-        axios.get('/admin/egg-categories-all'),
-    ]).then(([ordersResponse, inventoryResponse, categoriesResponse]) => {
+        axios.get('/admin/egg-shipping/next-invoice-number'),
+    ]).then(([ordersResponse, invoiceResponse]) => {
         orders.value = ordersResponse.data;
-        inventory.value = inventoryResponse.data;
-        categories.value = categoriesResponse.data;
+        generatedInvoiceNumber.value = invoiceResponse.data.invoice_number || '';
         loadingDiv.value = false;
     }).catch(() => {
         toastr.error('Erro ao carregar dados auxiliares');
@@ -125,76 +66,29 @@ const orderLabel = (order) => {
     return `#${order.id} — ${order.customer_name}${category} (${order.quantity_dozens} ovos)`;
 };
 
-const inventoryLabel = (item) => {
-    const trace = item.egg?.traceability_code || 'Sem rastreio';
-    const category = item.egg?.category?.name ? ` — ${item.egg.category.name}` : '';
-    return `#${item.id} — ${trace}${category} — ${item.quantity} ovos disponíveis`;
+const loadSelectedOrder = (orderId) => {
+    if (!orderId) {
+        selectedOrder.value = null;
+        return;
+    }
+
+    axios.get(`/admin/egg-orders/${orderId}`)
+        .then((response) => {
+            selectedOrder.value = response.data;
+        })
+        .catch(() => {
+            selectedOrder.value = null;
+            toastr.error('Erro ao carregar stock reservado do pedido');
+        });
 };
 
-const addAllocation = () => {
-    allocations.value.push({ inventory_id: '', quantity: remainingToAllocate.value > 0 ? remainingToAllocate.value : '' });
-};
-
-const removeAllocation = (index) => {
-    if (allocations.value.length === 1) {
-        allocations.value = [{ inventory_id: '', quantity: '' }];
-        return;
-    }
-    allocations.value.splice(index, 1);
-};
-
-/** Preenche automaticamente por FIFO, só stocks da categoria escolhida. */
-const autoAllocateFifo = () => {
-    if (!eggsNeeded.value) {
-        toastr.warning('Selecione um pedido primeiro');
-        return;
-    }
-
-    if (!autoCategoryId.value) {
-        toastr.warning('Selecione a categoria para autoalocar');
-        return;
-    }
-
-    const stocks = inventoryByAutoCategory.value;
-    if (stocks.length === 0) {
-        toastr.error('Não há stock disponível nesta categoria');
-        return;
-    }
-
-    let remaining = eggsNeeded.value;
-    const result = [];
-
-    for (const stock of stocks) {
-        if (remaining <= 0) break;
-        if (stock.quantity < 1) continue;
-
-        const take = Math.min(stock.quantity, remaining);
-        result.push({ inventory_id: stock.id, quantity: take });
-        remaining -= take;
-    }
-
-    if (remaining > 0) {
-        const categoryName = categoriesForAuto.value.find(c => String(c.id) === String(autoCategoryId.value))?.name || 'selecionada';
-        toastr.error(`Stock insuficiente na categoria "${categoryName}". Faltam ${remaining} ovos.`);
-        return;
-    }
-
-    allocations.value = result;
-    const categoryName = categoriesForAuto.value.find(c => String(c.id) === String(autoCategoryId.value))?.name || '';
-    toastr.success(`Alocado em ${result.length} lote(s) da categoria ${categoryName}`);
-};
-
-watch(selectedOrderId, () => {
-    allocations.value = [{ inventory_id: '', quantity: eggsNeeded.value || '' }];
-    // Sugere a categoria do pedido no Auto Alocar (pode alterar)
-    autoCategoryId.value = selectedOrder.value?.category_id
-        || selectedOrder.value?.category?.id
-        || '';
+watch(selectedOrderId, (id) => {
+    loadSelectedOrder(id);
 });
 
 const createRecordFunction = (values, actions) => {
-    if (!allocationValid.value) {
-        toastr.error('Ajuste os stocks: a soma das quantidades deve igualar o pedido e cada lote deve ter stock suficiente.');
+    if (!canSubmit.value) {
+        toastr.error('O pedido deve estar separado com stock reservado antes de expedir.');
         return;
     }
 
@@ -202,17 +96,14 @@ const createRecordFunction = (values, actions) => {
 
     const payload = {
         ...values,
+        invoice_number: generatedInvoiceNumber.value || values.invoice_number,
         vehicle_temperature: values.vehicle_temperature ? Number(values.vehicle_temperature) : null,
-        allocations: allocations.value.map(row => ({
-            inventory_id: Number(row.inventory_id),
-            quantity: Number(row.quantity),
-        })),
     };
 
     axios.post('/admin/egg-shipping', payload).then(() => {
         actions.resetForm();
         router.push({ path: '/admin/expedicao-ovos' });
-        toastr.success('Expedição criada com stock de um ou mais lotes.');
+        toastr.success('Expedição registada com sucesso.');
     }).catch((error) => {
         toastr.error('Erro ao adicionar. ' + (error.response?.data?.message || ''));
         if (error.response?.data?.errors) {
@@ -237,7 +128,7 @@ onMounted(() => {
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title">Formulário de registo de expedição.</h5>
+                        <h5 class="card-title">Registo de expedição (logística)</h5>
                         <router-link to="/admin/expedicao-ovos" class="btn btn-pill btn-primary mt-3">
                             <vue-feather type="arrow-left"></vue-feather>Voltar
                         </router-link>
@@ -245,16 +136,14 @@ onMounted(() => {
 
                     <div class="card-body">
                         <div v-if="shippableOrders.length === 0" class="alert alert-warning">
-                            Não existem pedidos em estado <strong>Separado</strong>. Marque um pedido como separado antes de expedir.
-                        </div>
-                        <div v-if="inventory.length === 0" class="alert alert-warning">
-                            Não existe estoque disponível para expedição.
+                            Não existem pedidos separados prontos para expedição.
+                            <router-link to="/admin/separacao-ovos">Ir para Separação de Ovos</router-link>
                         </div>
 
-                        <Form @submit="createRecordFunction" :validation-schema="schema" v-slot="{ errors }" :initial-values="{ shipping_date: today }">
+                        <Form @submit="createRecordFunction" :validation-schema="schema" v-slot="{ errors }" :initial-values="{ shipping_date: today, invoice_number: generatedInvoiceNumber }">
                             <div class="row">
                                 <div class="mb-3 col-md-12">
-                                    <label class="form-label" for="order_id">Pedido</label>
+                                    <label class="form-label" for="order_id">Pedido (separado)</label>
                                     <Field as="select" class="form-control" :class="{'is-invalid': errors.order_id}" name="order_id" id="order_id" v-model="selectedOrderId">
                                         <option value="">Selecione...</option>
                                         <option v-for="order in shippableOrders" :key="order.id" :value="order.id">{{ orderLabel(order) }}</option>
@@ -263,87 +152,33 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-                                <h6 class="mb-0">Stocks a utilizar</h6>
-                                <div class="d-flex align-items-center flex-wrap gap-2">
-                                    <select
-                                        class="form-control form-control-sm"
-                                        style="min-width: 180px;"
-                                        v-model="autoCategoryId"
-                                        :disabled="!eggsNeeded"
-                                    >
-                                        <option value="">Categoria (Auto Alocar)</option>
-                                        <option
-                                            v-for="cat in categoriesForAuto"
-                                            :key="cat.id"
-                                            :value="cat.id"
-                                        >{{ cat.name }}</option>
-                                    </select>
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-info"
-                                        @click.prevent="autoAllocateFifo"
-                                        :disabled="!eggsNeeded || inventory.length === 0 || !autoCategoryId"
-                                    >
-                                        Auto Alocar
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" @click.prevent="addAllocation" :disabled="!eggsNeeded">
-                                        + Adicionar stock
-                                    </button>
+                            <div v-if="selectedOrder" class="mb-4">
+                                <h6 class="mb-2">Stock reservado na separação</h6>
+                                <div class="table-responsive" v-if="reservedItems.length">
+                                    <table class="table table-sm table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Stock</th>
+                                                <th>Categoria</th>
+                                                <th class="text-end">Quantidade</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item in reservedItems" :key="item.id">
+                                                <td>#{{ item.inventory_id }} — {{ item.inventory?.egg?.traceability_code || '—' }}</td>
+                                                <td>{{ item.inventory?.egg?.category?.name || '—' }}</td>
+                                                <td class="text-end">{{ item.quantity }}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="2" class="text-end">Total reservado</th>
+                                                <th class="text-end">{{ reservedTotal }} / {{ selectedOrder.quantity_dozens }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
-                            </div>
-
-                            <div
-                                v-for="(row, index) in allocations"
-                                :key="index"
-                                class="row align-items-end mb-2"
-                            >
-                                <div class="col-md-7 mb-2">
-                                    <label class="form-label">Lote / Stock</label>
-                                    <select class="form-control" v-model="row.inventory_id">
-                                        <option value="">Selecione...</option>
-                                        <option
-                                            v-for="item in availableOptionsFor(index)"
-                                            :key="item.id"
-                                            :value="item.id"
-                                        >{{ inventoryLabel(item) }}</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-2">
-                                    <label class="form-label">Quantidade</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        class="form-control"
-                                        :max="stockFor(row.inventory_id)?.quantity || undefined"
-                                        v-model.number="row.quantity"
-                                        placeholder="Ovos"
-                                    >
-                                    <small class="text-muted" v-if="row.inventory_id">
-                                        Disp.: {{ stockFor(row.inventory_id)?.quantity ?? 0 }}
-                                    </small>
-                                </div>
-                                <div class="col-md-2 mb-2">
-                                    <button type="button" class="btn btn-outline-danger w-100" @click.prevent="removeAllocation(index)">
-                                        Remover
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div v-if="selectedOrder" class="alert mb-3" :class="allocationValid ? 'alert-info' : 'alert-warning'">
-                                <div><strong>Pedido:</strong> {{ eggsNeeded }} ovos</div>
-                                <div><strong>Já alocado:</strong> {{ allocatedTotal }} ovos</div>
-                                <div>
-                                    <strong>Falta alocar:</strong>
-                                    <span :class="remainingToAllocate === 0 ? 'text-success' : 'text-danger'">
-                                        {{ remainingToAllocate }}
-                                    </span>
-                                </div>
-                                <div class="small text-muted mt-1">
-                                    Pode usar um ou vários stocks. A soma tem de ser exactamente igual ao pedido.
-                                    <strong>Auto Alocar</strong> usa só lotes da categoria escolhida (FIFO).
-                                    Em <strong>+ Adicionar stock</strong> pode escolher qualquer lote manualmente.
-                                </div>
+                                <p v-else class="text-danger mb-0">Este pedido não tem stock reservado. Separe-o primeiro.</p>
                             </div>
 
                             <div class="row">
@@ -354,7 +189,8 @@ onMounted(() => {
                                 </div>
                                 <div class="mb-3 col-md-4">
                                     <label class="form-label" for="invoice_number">Nº Fatura</label>
-                                    <Field type="text" class="form-control" :class="{'is-invalid': errors.invoice_number}" name="invoice_number" id="invoice_number" placeholder="Ex: FT-2026-001"/>
+                                    <Field type="text" class="form-control bg-light" :class="{'is-invalid': errors.invoice_number}" name="invoice_number" id="invoice_number" v-model="generatedInvoiceNumber" readonly/>
+                                    <small class="text-muted">Gerado automaticamente</small>
                                     <span class="invalid-feedback">{{ errors.invoice_number }}</span>
                                 </div>
                                 <div class="mb-3 col-md-4">
@@ -395,7 +231,7 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" :disabled="loading || shippableOrders.length === 0 || inventory.length === 0 || !allocationValid">
+                            <button type="submit" class="btn btn-primary" :disabled="loading || !canSubmit">
                                 <div v-if="loading" class="spinner-border spinner-border-sm" role="status"></div>
                                 <span v-else>Submeter</span>
                             </button>
@@ -408,12 +244,9 @@ onMounted(() => {
 
     <div v-else>
         <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-center">
-                    <div class="spinner-border" role="status"><span class="sr-only"></span></div>
-                </div>
-                <br>
-                <div class="d-flex justify-content-center">Carregando Dados...</div>
+            <div class="card-body text-center py-5">
+                <div class="spinner-border" role="status"></div>
+                <div class="mt-2">Carregando Dados...</div>
             </div>
         </div>
     </div>

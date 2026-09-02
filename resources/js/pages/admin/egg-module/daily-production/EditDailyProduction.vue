@@ -29,6 +29,9 @@ const schema = yup.object({
     cracked_eggs: yup.number().min(0).nullable(),
     dirty_eggs: yup.number().min(0).nullable(),
     deformed_eggs: yup.number().min(0).nullable(),
+    normal_eggs: yup.number().min(0).nullable(),
+    grande_eggs: yup.number().min(0).nullable(),
+    jumbo_eggs: yup.number().min(0).nullable(),
     feed_consumption_kg: yup.number().min(0).nullable(),
     water_consumption_liters: yup.number().min(0).nullable(),
     light_hours: yup.number().min(0).nullable(),
@@ -91,6 +94,9 @@ const editFunction = (values, actions) => {
         cracked_eggs: Number(values.cracked_eggs || 0),
         dirty_eggs: Number(values.dirty_eggs || 0),
         deformed_eggs: Number(values.deformed_eggs || 0),
+        normal_eggs: Number(values.normal_eggs || 0),
+        grande_eggs: Number(values.grande_eggs || 0),
+        jumbo_eggs: Number(values.jumbo_eggs || 0),
         feed_consumption_kg: Number(values.feed_consumption_kg || 0),
         water_consumption_liters: Number(values.water_consumption_liters || 0),
         light_hours: Number(values.light_hours || 0),
@@ -156,7 +162,7 @@ onMounted(() => {
                                     <span class="invalid-feedback">{{ errors.total_eggs }}</span>
                                 </div>
                                 <div class="mb-3 col-md-3">
-                                    <label class="form-label" for="cracked_eggs">Partidos</label>
+                                    <label class="form-label" for="cracked_eggs">Rachados</label>
                                     <Field type="number" class="form-control" :class="{'is-invalid': errors.cracked_eggs}" name="cracked_eggs" v-model="retrievedData.cracked_eggs" id="cracked_eggs" min="0" @input="updatePreview(values)"/>
                                     <span class="invalid-feedback">{{ errors.cracked_eggs }}</span>
                                 </div>
@@ -169,6 +175,27 @@ onMounted(() => {
                                     <label class="form-label" for="deformed_eggs">Deformados</label>
                                     <Field type="number" class="form-control" :class="{'is-invalid': errors.deformed_eggs}" name="deformed_eggs" v-model="retrievedData.deformed_eggs" id="deformed_eggs" min="0" @input="updatePreview(values)"/>
                                     <span class="invalid-feedback">{{ errors.deformed_eggs }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="mb-3 col-md-12">
+                                    <p class="text-muted mb-2"><strong>Partidos por tamanho</strong> (Normal, Grande, Jumbo)</p>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" for="normal_eggs">Normal</label>
+                                    <Field type="number" class="form-control" :class="{'is-invalid': errors.normal_eggs}" name="normal_eggs" v-model="retrievedData.normal_eggs" id="normal_eggs" min="0"/>
+                                    <span class="invalid-feedback">{{ errors.normal_eggs }}</span>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" for="grande_eggs">Grande</label>
+                                    <Field type="number" class="form-control" :class="{'is-invalid': errors.grande_eggs}" name="grande_eggs" v-model="retrievedData.grande_eggs" id="grande_eggs" min="0"/>
+                                    <span class="invalid-feedback">{{ errors.grande_eggs }}</span>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <label class="form-label" for="jumbo_eggs">Jumbo</label>
+                                    <Field type="number" class="form-control" :class="{'is-invalid': errors.jumbo_eggs}" name="jumbo_eggs" v-model="retrievedData.jumbo_eggs" id="jumbo_eggs" min="0"/>
+                                    <span class="invalid-feedback">{{ errors.jumbo_eggs }}</span>
                                 </div>
                             </div>
 

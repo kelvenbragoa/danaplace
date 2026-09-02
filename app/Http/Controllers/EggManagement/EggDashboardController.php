@@ -43,6 +43,7 @@ class EggDashboardController extends Controller
     public function overview(Request $request)
     {
         [$startDate, $endDate] = $this->resolvePeriod($request);
+        $groupBy = $request->get('group_by', 'day') === 'month' ? 'month' : 'day';
 
         $productionQuery = $this->scopedProduction($request)
             ->whereDate('date', '>=', $startDate)
@@ -52,47 +53,22 @@ class EggDashboardController extends Controller
             ->whereDate('date', '>=', $startDate)
             ->whereDate('date', '<=', $endDate);
 
-        $byDayProduction = (clone $productionQuery)
-            ->selectRaw('DATE(date) as date, SUM(total_eggs) as total_eggs, SUM(clean_eggs) as clean_eggs, SUM(cracked_eggs) as cracked_eggs, SUM(dirty_eggs) as dirty_eggs, SUM(deformed_eggs) as deformed_eggs')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-
-        $byDayMortality = (clone $mortalityQuery)
-            ->selectRaw('DATE(date) as date, SUM(quantity) as total_mortality')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get()
-            ->keyBy('date');
-
-        $productionLabels = [];
-        $productionTotals = [];
-        $productionCracked = [];
-        $mortalitySeries = [];
-
-        foreach ($byDayProduction as $row) {
-            $label = Carbon::parse($row->date)->format('d/m');
-            $productionLabels[] = $label;
-            $productionTotals[] = (int) $row->total_eggs;
-            $productionCracked[] = (int) $row->cracked_eggs;
-            $mortalitySeries[] = (int) ($byDayMortality->get($row->date)->total_mortality ?? 0);
-        }
-
-        // Preencher mortalidade em dias sem produção
-        if ($byDayProduction->isEmpty() && $byDayMortality->isNotEmpty()) {
-            foreach ($byDayMortality->sortKeys() as $date => $row) {
-                $productionLabels[] = Carbon::parse($date)->format('d/m');
-                $productionTotals[] = 0;
-                $productionCracked[] = 0;
-                $mortalitySeries[] = (int) $row->total_mortality;
-            }
-        }
+        $productionSeries = $this->buildProductionSeries($productionQuery, $mortalityQuery, $groupBy);
+        $feedSeries = $this->buildFeedSeries($productionQuery, $groupBy);
+        $sizeSeries = $this->buildSizeSeries($productionQuery, $groupBy);
+        $ordersSeries = $this->buildOrdersShippingSeries($startDate, $endDate, $groupBy);
 
         $qualityTotals = [
             'clean' => (int) (clone $productionQuery)->sum('clean_eggs'),
             'cracked' => (int) (clone $productionQuery)->sum('cracked_eggs'),
             'dirty' => (int) (clone $productionQuery)->sum('dirty_eggs'),
             'deformed' => (int) (clone $productionQuery)->sum('deformed_eggs'),
+        ];
+
+        $sizeTotals = [
+            'normal' => (int) (clone $productionQuery)->sum('normal_eggs'),
+            'grande' => (int) (clone $productionQuery)->sum('grande_eggs'),
+            'jumbo' => (int) (clone $productionQuery)->sum('jumbo_eggs'),
         ];
 
         $byFlock = (clone $productionQuery)
@@ -120,6 +96,13 @@ class EggDashboardController extends Controller
             ->whereDate('shipping_date', '>=', $startDate)
             ->whereDate('shipping_date', '<=', $endDate)
             ->sum('quantity_eggs');
+
+        $totalFeedKg = round((float) (clone $productionQuery)->sum('feed_consumption_kg'), 2);
+        $feedPricePerKg = $this->feedPricePerKg();
+        $totalFeedCost = round($totalFeedKg * $feedPricePerKg, 2);
+        $totalFeedBags = config('egg.feed_bag_kg') > 0
+            ? round($totalFeedKg / config('egg.feed_bag_kg'), 2)
+            : 0;
 
         $expensesQuery = EggExpense::query()
             ->whereDate('expense_date', '>=', $startDate)
@@ -151,6 +134,12 @@ class EggDashboardController extends Controller
             'period' => [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
+                'group_by' => $groupBy,
+            ],
+            'feed_config' => [
+                'bag_kg' => config('egg.feed_bag_kg'),
+                'bag_price_mzn' => config('egg.feed_bag_price_mzn'),
+                'price_per_kg' => $feedPricePerKg,
             ],
             'kpis' => [
                 'total_eggs' => $totalEggsPeriod,
@@ -164,6 +153,9 @@ class EggDashboardController extends Controller
                 'revenue' => round((float) $revenue, 2),
                 'expenses' => $expenseTotal,
                 'shipped_eggs' => (int) $shippedQty,
+                'total_feed_kg' => $totalFeedKg,
+                'total_feed_cost_mzn' => $totalFeedCost,
+                'total_feed_bags' => $totalFeedBags,
                 'active_flocks' => Flock::whereIn('status', ['growing', 'laying'])
                     ->when($request->filled('farm_id'), function ($q) use ($request) {
                         $q->whereHas('house', fn ($h) => $h->where('farm_id', $request->farm_id));
@@ -172,11 +164,17 @@ class EggDashboardController extends Controller
                     ->count(),
             ],
             'charts' => [
-                'production_bar' => [
-                    'labels' => $productionLabels,
-                    'totals' => $productionTotals,
-                    'cracked' => $productionCracked,
-                    'mortality' => $mortalitySeries,
+                'production_bar' => $productionSeries,
+                'size_bar' => $sizeSeries,
+                'feed_bar' => $feedSeries,
+                'orders_bar' => $ordersSeries,
+                'size_totals_bar' => [
+                    'labels' => ['Normal', 'Grande', 'Jumbo'],
+                    'data' => [$sizeTotals['normal'], $sizeTotals['grande'], $sizeTotals['jumbo']],
+                ],
+                'inventory_bar' => [
+                    'labels' => collect($inventory)->pluck('category'),
+                    'data' => collect($inventory)->pluck('quantity')->map(fn ($v) => (int) $v),
                 ],
                 'quality_pie' => [
                     'labels' => ['Limpos', 'Rachados', 'Sujos', 'Deformados'],
@@ -449,6 +447,183 @@ class EggDashboardController extends Controller
             ->orderBy('alert_datetime', 'desc')
             ->limit(5)
             ->get();
+    }
+
+    private function feedPricePerKg(): float
+    {
+        $bagKg = (float) config('egg.feed_bag_kg', 50);
+        $bagPrice = (float) config('egg.feed_bag_price_mzn', 1800);
+
+        return $bagKg > 0 ? round($bagPrice / $bagKg, 4) : 0;
+    }
+
+    private function periodGroupExpression(string $groupBy, string $column = 'date'): string
+    {
+        return $groupBy === 'month'
+            ? "DATE_FORMAT({$column}, '%Y-%m')"
+            : "DATE({$column})";
+    }
+
+    private function formatPeriodLabel(string $bucket, string $groupBy): string
+    {
+        if ($groupBy === 'month') {
+            return Carbon::createFromFormat('Y-m', $bucket)->format('m/Y');
+        }
+
+        return Carbon::parse($bucket)->format('d/m');
+    }
+
+    private function buildProductionSeries($productionQuery, $mortalityQuery, string $groupBy): array
+    {
+        $groupExpr = $this->periodGroupExpression($groupBy);
+
+        $byPeriod = (clone $productionQuery)
+            ->selectRaw("{$groupExpr} as period_key, SUM(total_eggs) as total_eggs, SUM(cracked_eggs) as cracked_eggs")
+            ->groupBy('period_key')
+            ->orderBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
+        $byMortality = (clone $mortalityQuery)
+            ->selectRaw("{$groupExpr} as period_key, SUM(quantity) as total_mortality")
+            ->groupBy('period_key')
+            ->orderBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
+        $allKeys = $byPeriod->keys()
+            ->merge($byMortality->keys())
+            ->unique()
+            ->sort()
+            ->values();
+
+        $labels = [];
+        $totals = [];
+        $cracked = [];
+        $mortality = [];
+
+        foreach ($allKeys as $key) {
+            $labels[] = $this->formatPeriodLabel((string) $key, $groupBy);
+            $totals[] = (int) ($byPeriod->get($key)->total_eggs ?? 0);
+            $cracked[] = (int) ($byPeriod->get($key)->cracked_eggs ?? 0);
+            $mortality[] = (int) ($byMortality->get($key)->total_mortality ?? 0);
+        }
+
+        return compact('labels', 'totals', 'cracked', 'mortality');
+    }
+
+    private function buildFeedSeries($productionQuery, string $groupBy): array
+    {
+        $groupExpr = $this->periodGroupExpression($groupBy);
+        $pricePerKg = $this->feedPricePerKg();
+
+        $rows = (clone $productionQuery)
+            ->selectRaw("{$groupExpr} as period_key, SUM(feed_consumption_kg) as feed_kg")
+            ->groupBy('period_key')
+            ->orderBy('period_key')
+            ->get();
+
+        $labels = [];
+        $kg = [];
+        $cost_mzn = [];
+        $bags = [];
+        $bagKg = (float) config('egg.feed_bag_kg', 50);
+
+        foreach ($rows as $row) {
+            $feedKg = round((float) $row->feed_kg, 2);
+            $labels[] = $this->formatPeriodLabel((string) $row->period_key, $groupBy);
+            $kg[] = $feedKg;
+            $cost_mzn[] = round($feedKg * $pricePerKg, 2);
+            $bags[] = $bagKg > 0 ? round($feedKg / $bagKg, 2) : 0;
+        }
+
+        return compact('labels', 'kg', 'cost_mzn', 'bags');
+    }
+
+    private function buildSizeSeries($productionQuery, string $groupBy): array
+    {
+        $groupExpr = $this->periodGroupExpression($groupBy);
+
+        $rows = (clone $productionQuery)
+            ->selectRaw("{$groupExpr} as period_key, SUM(normal_eggs) as normal_eggs, SUM(grande_eggs) as grande_eggs, SUM(jumbo_eggs) as jumbo_eggs")
+            ->groupBy('period_key')
+            ->orderBy('period_key')
+            ->get();
+
+        $labels = [];
+        $normal = [];
+        $grande = [];
+        $jumbo = [];
+
+        foreach ($rows as $row) {
+            $labels[] = $this->formatPeriodLabel((string) $row->period_key, $groupBy);
+            $normal[] = (int) $row->normal_eggs;
+            $grande[] = (int) $row->grande_eggs;
+            $jumbo[] = (int) $row->jumbo_eggs;
+        }
+
+        return compact('labels', 'normal', 'grande', 'jumbo');
+    }
+
+    private function buildOrdersShippingSeries(string $startDate, string $endDate, string $groupBy): array
+    {
+        $orderGroup = $this->periodGroupExpression($groupBy, 'order_date');
+        $shipGroup = $this->periodGroupExpression($groupBy, 'shipping_date');
+        $schedGroup = $this->periodGroupExpression($groupBy, 'expected_delivery_date');
+
+        $ordersByPeriod = EggOrder::query()
+            ->whereDate('order_date', '>=', $startDate)
+            ->whereDate('order_date', '<=', $endDate)
+            ->selectRaw("{$orderGroup} as period_key, COUNT(*) as order_count, SUM(quantity_dozens) as order_qty")
+            ->groupBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
+        $shippedByPeriod = EggShipping::query()
+            ->whereDate('shipping_date', '>=', $startDate)
+            ->whereDate('shipping_date', '<=', $endDate)
+            ->selectRaw("{$shipGroup} as period_key, COUNT(*) as ship_count, SUM(quantity_eggs) as ship_qty")
+            ->groupBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
+        $scheduledByPeriod = EggOrder::query()
+            ->whereNotNull('expected_delivery_date')
+            ->whereDate('expected_delivery_date', '>=', $startDate)
+            ->whereDate('expected_delivery_date', '<=', $endDate)
+            ->whereNotIn('status', ['canceled', 'shipped'])
+            ->selectRaw("{$schedGroup} as period_key, COUNT(*) as sched_count, SUM(quantity_dozens) as sched_qty")
+            ->groupBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
+        $allKeys = collect()
+            ->merge($ordersByPeriod->keys())
+            ->merge($shippedByPeriod->keys())
+            ->merge($scheduledByPeriod->keys())
+            ->unique()
+            ->sort()
+            ->values();
+
+        $labels = [];
+        $orders = [];
+        $shipped = [];
+        $scheduled = [];
+        $order_qty = [];
+        $shipped_qty = [];
+        $scheduled_qty = [];
+
+        foreach ($allKeys as $key) {
+            $labels[] = $this->formatPeriodLabel((string) $key, $groupBy);
+            $orders[] = (int) ($ordersByPeriod->get($key)->order_count ?? 0);
+            $shipped[] = (int) ($shippedByPeriod->get($key)->ship_count ?? 0);
+            $scheduled[] = (int) ($scheduledByPeriod->get($key)->sched_count ?? 0);
+            $order_qty[] = (int) ($ordersByPeriod->get($key)->order_qty ?? 0);
+            $shipped_qty[] = (int) ($shippedByPeriod->get($key)->ship_qty ?? 0);
+            $scheduled_qty[] = (int) ($scheduledByPeriod->get($key)->sched_qty ?? 0);
+        }
+
+        return compact('labels', 'orders', 'shipped', 'scheduled', 'order_qty', 'shipped_qty', 'scheduled_qty');
     }
 
     private function orderStatusLabel(string $status): string

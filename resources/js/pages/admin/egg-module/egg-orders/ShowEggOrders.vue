@@ -99,6 +99,28 @@ onMounted(() => {
 
                         <p v-if="retrievedData.observations"><strong>Observações:</strong> {{ retrievedData.observations }}</p>
 
+                        <div v-if="retrievedData.items?.length" class="mt-3">
+                            <h6>Stock reservado (separação)</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Stock</th>
+                                            <th>Categoria</th>
+                                            <th class="text-end">Qtd</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in retrievedData.items" :key="item.id">
+                                            <td>#{{ item.inventory_id }}</td>
+                                            <td>{{ item.inventory?.egg?.category?.name || '—' }}</td>
+                                            <td class="text-end">{{ item.quantity }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                         <hr v-if="retrievedData.status !== 'shipped' && retrievedData.status !== 'canceled'">
 
                         <div class="mt-2" v-if="retrievedData.status === 'pending'">
@@ -106,7 +128,9 @@ onMounted(() => {
                             <button class="btn btn-danger" @click.prevent="runAction('cancel')" :disabled="loadingAction">Cancelar</button>
                         </div>
                         <div class="mt-2" v-if="retrievedData.status === 'approved'">
-                            <button class="btn btn-primary mr-2" @click.prevent="runAction('pick')" :disabled="loadingAction">Marcar Separado</button>
+                            <router-link :to="'/admin/separacao-ovos/' + retrievedData.id + '/separar'" class="btn btn-primary mr-2">
+                                Separar stock
+                            </router-link>
                             <button class="btn btn-danger" @click.prevent="runAction('cancel')" :disabled="loadingAction">Cancelar</button>
                         </div>
                         <div class="mt-2" v-if="retrievedData.status === 'picked'">

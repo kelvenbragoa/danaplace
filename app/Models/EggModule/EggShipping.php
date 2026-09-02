@@ -42,4 +42,26 @@ class EggShipping extends Model
     {
         return $this->belongsTo(User::class, 'responsible_id');
     }
+
+    public static function generateNextInvoiceNumber(): string
+    {
+        $year = now()->year;
+        $prefix = "FT-{$year}-";
+
+        $lastNumber = self::where('invoice_number', 'like', $prefix . '%')
+            ->orderByDesc('id')
+            ->value('invoice_number');
+
+        $next = 1;
+        if ($lastNumber && preg_match('/-(\d+)$/', $lastNumber, $matches)) {
+            $next = ((int) $matches[1]) + 1;
+        }
+
+        do {
+            $invoiceNumber = $prefix . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
+            $next++;
+        } while (self::where('invoice_number', $invoiceNumber)->exists());
+
+        return $invoiceNumber;
+    }
 }

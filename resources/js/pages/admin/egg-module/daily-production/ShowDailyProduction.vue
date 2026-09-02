@@ -64,9 +64,12 @@ onMounted(() => {
                             <div class="col-md-6">
                                 <p><strong>Total de Ovos:</strong> {{ retrievedData.total_eggs }}</p>
                                 <p><strong>Ovos Limpos:</strong> {{ retrievedData.clean_eggs }}</p>
-                                <p><strong>Partidos:</strong> {{ retrievedData.cracked_eggs }}</p>
+                                <p><strong>Rachados:</strong> {{ retrievedData.cracked_eggs }}</p>
                                 <p><strong>Sujos:</strong> {{ retrievedData.dirty_eggs }}</p>
                                 <p><strong>Deformados:</strong> {{ retrievedData.deformed_eggs }}</p>
+                                <p><strong>Normal:</strong> {{ retrievedData.normal_eggs || 0 }}</p>
+                                <p><strong>Grande:</strong> {{ retrievedData.grande_eggs || 0 }}</p>
+                                <p><strong>Jumbo:</strong> {{ retrievedData.jumbo_eggs || 0 }}</p>
                                 <p><strong>Taxa de Postura:</strong> {{ layingRate }}%</p>
                             </div>
                         </div>

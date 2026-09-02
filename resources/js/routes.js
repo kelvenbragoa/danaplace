@@ -415,6 +415,8 @@ import CalendarEggShipping from './pages/admin/egg-module/egg-shipping/CalendarE
 import CreateEggShipping from './pages/admin/egg-module/egg-shipping/CreateEggShipping.vue';
 import ShowEggShipping from './pages/admin/egg-module/egg-shipping/ShowEggShipping.vue';
 import EditEggShipping from './pages/admin/egg-module/egg-shipping/EditEggShipping.vue';
+import IndexEggSeparation from './pages/admin/egg-module/egg-separation/IndexEggSeparation.vue';
+import SeparateEggOrder from './pages/admin/egg-module/egg-separation/SeparateEggOrder.vue';
 
 import IndexTraceability from './pages/admin/egg-module/traceability/IndexTraceability.vue';
 import ShowTraceability from './pages/admin/egg-module/traceability/ShowTraceability.vue';
@@ -2379,6 +2381,18 @@ export default [
         path: '/admin/pedidos/:id/edit',
         name: 'admin.pedidos.edit',
         component: EditEggOrders,
+    },
+
+    //separação de ovos
+    {
+        path: '/admin/separacao-ovos',
+        name: 'admin.separacao-ovos.index',
+        component: IndexEggSeparation,
+    },
+    {
+        path: '/admin/separacao-ovos/:id/separar',
+        name: 'admin.separacao-ovos.separate',
+        component: SeparateEggOrder,
     },
 
     //clientes de ovos (produção avícola)

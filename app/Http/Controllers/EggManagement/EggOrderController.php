@@ -4,12 +4,22 @@ namespace App\Http\Controllers\EggManagement;
 
 use App\Http\Controllers\Controller;
 use App\Models\EggModule\EggCustomer;
+use App\Models\EggModule\EggInventory;
 use App\Models\EggModule\EggOrder;
+use App\Models\EggModule\EggOrderItem;
+use App\Services\EggModule\EggInventoryReservationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class EggOrderController extends Controller
 {
+    public function __construct(
+        private EggInventoryReservationService $reservationService
+    ) {
+    }
+
     public function index(Request $request)
     {
         $searchQuery = $request->query('query');
@@ -39,6 +49,16 @@ class EggOrderController extends Controller
     public function pendingOrders()
     {
         $orders = EggOrder::whereIn('status', ['pending', 'approved', 'picked'])
+            ->with(['category', 'customer', 'shipping'])
+            ->orderBy('order_date', 'asc')
+            ->get();
+
+        return response()->json($orders);
+    }
+
+    public function forSeparation()
+    {
+        $orders = EggOrder::where('status', 'approved')
             ->with(['category', 'customer'])
             ->orderBy('order_date', 'asc')
             ->get();
@@ -101,7 +121,13 @@ class EggOrderController extends Controller
 
     public function show(EggOrder $eggOrder)
     {
-        return response()->json($eggOrder->load('category', 'shipping', 'customer'));
+        return response()->json($eggOrder->load([
+            'category',
+            'shipping',
+            'customer',
+            'items.inventory.egg.category',
+            'items.inventory.house',
+        ]));
     }
 
     public function store(Request $request)
@@ -136,24 +162,103 @@ class EggOrderController extends Controller
 
     public function approve(EggOrder $eggOrder)
     {
+        if ($eggOrder->status !== 'pending') {
+            return response()->json(['message' => 'Só pedidos pendentes podem ser aprovados.'], 422);
+        }
+
         $eggOrder->update(['status' => 'approved']);
+
         return response()->json($eggOrder);
     }
 
-    public function pick(EggOrder $eggOrder)
+    public function pick(Request $request, EggOrder $eggOrder)
     {
-        $eggOrder->update(['status' => 'picked']);
-        return response()->json($eggOrder);
+        $validated = $request->validate([
+            'allocations' => 'required|array|min:1',
+            'allocations.*.inventory_id' => 'required|exists:egg_inventories,id',
+            'allocations.*.quantity' => 'required|integer|min:1',
+        ]);
+
+        if ($eggOrder->status !== 'approved') {
+            return response()->json(['message' => 'Só pedidos aprovados podem ser separados.'], 422);
+        }
+
+        $eggsNeeded = (int) $eggOrder->quantity_dozens;
+        $allocations = collect($validated['allocations'])->map(fn ($row) => [
+            'inventory_id' => (int) $row['inventory_id'],
+            'quantity' => (int) $row['quantity'],
+        ]);
+
+        $allocatedTotal = $allocations->sum('quantity');
+        if ($allocatedTotal !== $eggsNeeded) {
+            return response()->json([
+                'message' => "A soma das quantidades ({$allocatedTotal}) deve ser igual ao pedido ({$eggsNeeded} ovos).",
+            ], 422);
+        }
+
+        if ($allocations->pluck('inventory_id')->unique()->count() !== $allocations->count()) {
+            return response()->json(['message' => 'Não pode usar o mesmo stock mais do que uma vez.'], 422);
+        }
+
+        try {
+            $order = DB::transaction(function () use ($eggOrder, $allocations) {
+                $order = EggOrder::lockForUpdate()->findOrFail($eggOrder->id);
+                $createdItems = [];
+
+                foreach ($allocations as $allocation) {
+                    $inventory = EggInventory::lockForUpdate()->findOrFail($allocation['inventory_id']);
+                    $reserved = $this->reservationService->reserveQuantity($inventory, $allocation['quantity']);
+
+                    $createdItems[] = EggOrderItem::create([
+                        'order_id' => $order->id,
+                        'inventory_id' => $reserved->id,
+                        'quantity' => $allocation['quantity'],
+                    ]);
+                }
+
+                $order->update(['status' => 'picked']);
+
+                return $order->load('items.inventory.egg.category');
+            });
+        } catch (RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json($order);
     }
 
     public function cancel(EggOrder $eggOrder)
     {
-        $eggOrder->update(['status' => 'canceled']);
-        return response()->json($eggOrder);
+        if (in_array($eggOrder->status, ['shipped', 'canceled'], true)) {
+            return response()->json(['message' => 'Este pedido não pode ser cancelado.'], 422);
+        }
+
+        if ($eggOrder->shipping()->exists()) {
+            return response()->json(['message' => 'Remova a expedição antes de cancelar o pedido.'], 422);
+        }
+
+        DB::transaction(function () use ($eggOrder) {
+            $order = EggOrder::lockForUpdate()->with('items.inventory')->findOrFail($eggOrder->id);
+
+            foreach ($order->items as $item) {
+                if ($item->inventory) {
+                    $this->reservationService->releaseReserved($item->inventory);
+                }
+                $item->delete();
+            }
+
+            $order->update(['status' => 'canceled']);
+        });
+
+        return response()->json($eggOrder->fresh());
     }
 
     public function update(Request $request, EggOrder $eggOrder)
     {
+        if (in_array($eggOrder->status, ['picked', 'shipped'], true)) {
+            return response()->json(['message' => 'Não pode editar pedidos já separados ou expedidos.'], 422);
+        }
+
         $validated = $request->validate([
             'customer_name' => 'string|max:100',
             'customer_phone' => 'nullable|string|max:20',
@@ -164,12 +269,29 @@ class EggOrderController extends Controller
         ]);
 
         $eggOrder->update($validated);
+
         return response()->json($eggOrder);
     }
 
     public function destroy(EggOrder $eggOrder)
     {
-        $eggOrder->delete();
+        if ($eggOrder->shipping()->exists()) {
+            return response()->json(['message' => 'Remova a expedição antes de apagar o pedido.'], 422);
+        }
+
+        DB::transaction(function () use ($eggOrder) {
+            $order = EggOrder::with('items.inventory')->findOrFail($eggOrder->id);
+
+            foreach ($order->items as $item) {
+                if ($item->inventory && $item->inventory->status === 'reserved') {
+                    $this->reservationService->releaseReserved($item->inventory);
+                }
+                $item->delete();
+            }
+
+            $order->delete();
+        });
+
         return response()->json(['message' => 'Order deleted successfully']);
     }
 

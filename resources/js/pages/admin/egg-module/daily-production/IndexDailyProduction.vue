@@ -128,8 +128,9 @@ onMounted(() => {
                                         <th>Galpão</th>
                                         <th>Total Ovos</th>
                                         <th>Limpos</th>
-                                        <th>Partidos</th>
-                                        <th>Taxa Postura</th>
+                                        <th>Normal</th>
+                                        <th>Grande</th>
+                                        <th>Jumbo</th>
                                         <th>Ração (kg)</th>
                                         <th>Ações</th>
                                     </tr>
@@ -142,8 +143,9 @@ onMounted(() => {
                                         <td>{{ actualData.flock?.house?.name || '-' }}</td>
                                         <td>{{ actualData.total_eggs }}</td>
                                         <td>{{ actualData.clean_eggs }}</td>
-                                        <td>{{ actualData.cracked_eggs }}</td>
-                                        <td>{{ getLayingRate(actualData) }}%</td>
+                                        <td>{{ actualData.normal_eggs || 0 }}</td>
+                                        <td>{{ actualData.grande_eggs || 0 }}</td>
+                                        <td>{{ actualData.jumbo_eggs || 0 }}</td>
                                         <td>{{ actualData.feed_consumption_kg }}</td>
                                         <td>
                                             <router-link :to="'/admin/producao-diaria/' + actualData.id + '/edit'"><vue-feather type="edit-2"></vue-feather></router-link>
@@ -154,7 +156,7 @@ onMounted(() => {
                                 </tbody>
                                 <tbody v-else>
                                     <tr>
-                                        <td colspan="10" align="center">Nenhum resultado encontrado</td>
+                                        <td colspan="12" align="center">Nenhum resultado encontrado</td>
                                     </tr>
                                 </tbody>
                             </table>

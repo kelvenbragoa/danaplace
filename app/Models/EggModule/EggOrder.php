@@ -36,6 +36,11 @@ class EggOrder extends Model
     {
         return $this->hasOne(EggShipping::class, 'order_id');
     }
+
+    public function items()
+    {
+        return $this->hasMany(EggOrderItem::class, 'order_id');
+    }
     
     public function getTotalValueAttribute()
     {
